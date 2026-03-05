@@ -9,7 +9,11 @@ import androidx.compose.runtime.setValue
 
 // State Owner
 @Composable
-fun LoginRoute(modifier: Modifier = Modifier) {
+fun LoginRoute(
+    onLoginSuccess: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -35,10 +39,15 @@ fun LoginRoute(modifier: Modifier = Modifier) {
             errorMessage = null
         },
         onLoginClick = {
-            if (isFormValid)
+            if (isFormValid) {
                 errorMessage = null
-            else
-                errorMessage = "Enter email and password" },
-        modifier = modifier
+                onLoginSuccess()
+            } else {
+                errorMessage = "Enter email and password"
+            }
+        },
+            modifier = modifier
     )
 }
+
+
