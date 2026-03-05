@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.auction6.ui.theme.Auction6Theme
-import com.example.auction6.ui.login.LoginRoute
 import com.example.auction6.ui.navigation.AppNavHost
 
 class MainActivity : ComponentActivity() {

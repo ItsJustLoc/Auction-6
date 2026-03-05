@@ -9,11 +9,7 @@ import androidx.compose.runtime.setValue
 
 // State Owner
 @Composable
-fun LoginRoute(
-    onLoginSuccess: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-
+fun LoginRoute(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -21,6 +17,7 @@ fun LoginRoute(
     // Enables/disables login button based on T/F of isFormValid
     val isFormValid = email.isNotBlank() && password.isNotBlank()
 
+    // Creates internal LoginUoState data class
     val uiState = LoginUiState(
         email = email,
         password = password,
@@ -28,6 +25,7 @@ fun LoginRoute(
         isLoginEnabled = isFormValid
     )
 
+    // Call to LoginScreen
     LoginScreen(
         state = uiState,
         onEmailChange = { newEmail ->
@@ -42,12 +40,11 @@ fun LoginRoute(
             if (isFormValid) {
                 errorMessage = null
                 onLoginSuccess()
-            } else {
+            }
+            else {
                 errorMessage = "Enter email and password"
             }
         },
-            modifier = modifier
+        modifier = modifier
     )
 }
-
-

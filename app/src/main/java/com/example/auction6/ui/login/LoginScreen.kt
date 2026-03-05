@@ -39,6 +39,7 @@ fun LoginScreen(
             label = { Text("Enter Password") }
         )
 
+        // Login button (greyed out when email / password is blank
         Button(onClick = onLoginClick, enabled = state.isLoginEnabled) {
             Text(text = "Login")
         }
