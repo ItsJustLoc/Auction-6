@@ -1,12 +1,13 @@
 package com.example.auction6.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.auction6.ui.login.LoginRoute
 import com.example.auction6.ui.marketplace.MarketplaceRoute
+import com.example.auction6.ui.register.RegisterRoute
 
 @Composable
 fun AppNavHost(modifier: Modifier = Modifier) {
@@ -17,18 +18,32 @@ fun AppNavHost(modifier: Modifier = Modifier) {
         startDestination = Route.Login.route,
         modifier = modifier
     ) {
-        // Login Route
         composable(Route.Login.route) {
             LoginRoute(
                 onLoginSuccess = {
                     navController.navigate(Route.Marketplace.route) {
                         popUpTo(Route.Login.route) { inclusive = true }
                     }
+                },
+                onGoToRegister = {
+                    navController.navigate(Route.Register.route)
                 }
             )
         }
 
-        // Marketplace Route
+        composable(Route.Register.route) {
+            RegisterRoute(
+                onRegisterSuccess = {
+                    navController.navigate(Route.Login.route) {
+                        popUpTo(Route.Register.route) { inclusive = true }
+                    }
+                },
+                onBackToLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
         composable(Route.Marketplace.route) {
             MarketplaceRoute(
                 onLogoutSuccess = {
@@ -38,8 +53,5 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                 }
             )
         }
-
-
     }
-
 }

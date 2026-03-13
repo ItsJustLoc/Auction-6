@@ -1,3 +1,4 @@
+// Owns login UI state and authenticates users with Room.
 package com.example.auction6.ui.login
 
 import androidx.compose.runtime.Composable
@@ -6,18 +7,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import com.example.auction6.data.local.DatabaseProvider
+import kotlinx.coroutines.launch
 
 // State Owner
 @Composable
-fun LoginRoute(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier) {
+fun LoginRoute(onLoginSuccess: () -> Unit,
+               onGoToRegister: () -> Unit,
+               modifier: Modifier = Modifier)
+{
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    val userDao = remember(context) {
+        DatabaseProvider.get(context).userDao()
+    }
     // Enables/disables login button based on T/F of isFormValid
     val isFormValid = email.isNotBlank() && password.isNotBlank()
 
-    // Creates internal LoginUoState data class
+    // Creates internal LoginUiState data class
     val uiState = LoginUiState(
         email = email,
         password = password,
@@ -37,14 +51,32 @@ fun LoginRoute(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier) {
             errorMessage = null
         },
         onLoginClick = {
-            if (isFormValid) {
-                errorMessage = null
-                onLoginSuccess()
-            }
-            else {
+            val normalizedEmail = email.trim()
+
+            if (normalizedEmail.isBlank() || password.isBlank()) {
                 errorMessage = "Enter email and password"
+            } else {
+                coroutineScope.launch {
+                    val user = userDao.findByEmail(normalizedEmail)
+
+                    when {
+                        user == null -> {
+                            errorMessage = "User not found"
+                        }
+
+                        user.passwordHash != password -> {
+                            errorMessage = "Incorrect password"
+                        }
+
+                        else -> {
+                            errorMessage = null
+                            onLoginSuccess()
+                        }
+                    }
+                }
             }
         },
+        onGoToRegisterClick = onGoToRegister,
         modifier = modifier
     )
 }

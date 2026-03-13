@@ -1,3 +1,4 @@
+//Only display UI and emit events
 package com.example.auction6.ui.login
 
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,8 @@ fun LoginScreen(
     state: LoginUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onLoginClick: () -> Unit = {},
+    onLoginClick: () -> Unit,
+    onGoToRegisterClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -39,9 +41,13 @@ fun LoginScreen(
             label = { Text("Enter Password") }
         )
 
-        // Login button (greyed out when email / password is blank
+        // Login button (greyed out when email / password is blank)
         Button(onClick = onLoginClick, enabled = state.isLoginEnabled) {
             Text(text = "Login")
+        }
+        //Register button (greyed out when email / password is blank)
+        Button(onClick = onGoToRegisterClick) {
+            Text(text = "Create Account")
         }
         // if Error exist display under "Login" button
         state.errorMessage?.let { Text(it) }
