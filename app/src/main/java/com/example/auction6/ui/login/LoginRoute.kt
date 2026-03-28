@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginRoute(onLoginSuccess: () -> Unit,
                onGoToRegister: () -> Unit,
+               onGoToVerify: (userId: Long) -> Unit,
                modifier: Modifier = Modifier)
 {
     var email by remember { mutableStateOf("") }
@@ -67,7 +68,10 @@ fun LoginRoute(onLoginSuccess: () -> Unit,
                         user.passwordHash != password -> {
                             errorMessage = "Incorrect password"
                         }
-
+                        !user.isVerified -> {
+                            errorMessage = null
+                            onGoToVerify(user.id)
+                        }
                         else -> {
                             errorMessage = null
                             onLoginSuccess()

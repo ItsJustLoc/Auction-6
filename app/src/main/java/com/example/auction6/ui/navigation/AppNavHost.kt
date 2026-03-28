@@ -2,12 +2,15 @@ package com.example.auction6.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.auction6.ui.login.LoginRoute
 import com.example.auction6.ui.marketplace.MarketplaceRoute
 import com.example.auction6.ui.register.RegisterRoute
+import com.example.auction6.ui.verify.VerifyRoute
 
 @Composable
 fun AppNavHost(modifier: Modifier = Modifier) {
@@ -27,19 +30,42 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                 },
                 onGoToRegister = {
                     navController.navigate(Route.Register.route)
+                },
+                onGoToVerify = { userId ->
+                    navController.navigate(Route.Verify.createRoute(userId)) {
+                        popUpTo(Route.Login.route) { inclusive = false }
+                    }
                 }
             )
         }
 
         composable(Route.Register.route) {
             RegisterRoute(
-                onRegisterSuccess = {
-                    navController.navigate(Route.Login.route) {
+                onRegisterSuccess = { userId ->
+                    navController.navigate(Route.Verify.createRoute(userId)) {
                         popUpTo(Route.Register.route) { inclusive = true }
                     }
                 },
                 onBackToLogin = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            route = Route.Verify.route,
+            arguments = listOf(navArgument("userId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getLong("userId") ?: return@composable
+            VerifyRoute(
+                userId = userId,
+                onVerifySuccess = {
+                    navController.navigate(Route.Login.route) {
+                        popUpTo(Route.Verify.route) { inclusive = true }
+                    }
+                },
+                onVerifyBack = {
+                    navController.popBackStack()  // <-- add this
                 }
             )
         }

@@ -12,5 +12,6 @@ data class UserEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     val email: String,
     val passwordHash: String,   // for now you can store plain text if your team allows, but name it like this
-    val isVerified: Boolean = false
+    val isVerified: Boolean = false,
+    val verificationCode: String = " "
 )
