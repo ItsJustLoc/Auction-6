@@ -4,4 +4,7 @@ sealed class Route(val route: String) {
     object Login : Route("login")
     object Register: Route("register")
     object Marketplace : Route("marketplace")
+    object Verify : Route("verify/{userId}"){
+        fun createRoute(userId: Long) = "verify/$userId"
+    }
 }

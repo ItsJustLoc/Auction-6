@@ -12,7 +12,10 @@ object DatabaseProvider {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "auction6.db"
-            ).build().also { INSTANCE = it }
+            )
+                .addMigrations(AppDatabase.MIGRATION_1_2)
+                .build()
+                .also { INSTANCE = it }
         }
     }
 }

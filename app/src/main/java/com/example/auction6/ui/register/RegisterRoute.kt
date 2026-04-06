@@ -1,4 +1,3 @@
-//Handler registration from state and Room-backed user creation
 package com.example.auction6.ui.register
 
 import androidx.compose.runtime.Composable
@@ -13,10 +12,9 @@ import com.example.auction6.data.local.DatabaseProvider
 import com.example.auction6.data.local.UserEntity
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun RegisterRoute(
-    onRegisterSuccess: () -> Unit,
+    onRegisterSuccess: (userId: Long) -> Unit,
     onBackToLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -27,12 +25,9 @@ fun RegisterRoute(
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val userDao = remember(context) {
-        DatabaseProvider.get(context).userDao()
-    }
+    val userDao = remember(context) { DatabaseProvider.get(context).userDao() }
 
-    val isFormValid =
-        email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()
+    val isFormValid = email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()
 
     val uiState = RegisterUiState(
         email = email,
@@ -44,21 +39,11 @@ fun RegisterRoute(
 
     RegisterScreen(
         state = uiState,
-        onEmailChange = { newEmail ->
-            email = newEmail
-            errorMessage = null
-        },
-        onPasswordChange = { newPassword ->
-            password = newPassword
-            errorMessage = null
-        },
-        onConfirmPasswordChange = { newConfirmPassword ->
-            confirmPassword = newConfirmPassword
-            errorMessage = null
-        },
+        onEmailChange = { email = it; errorMessage = null },
+        onPasswordChange = { password = it; errorMessage = null },
+        onConfirmPasswordChange = { confirmPassword = it; errorMessage = null },
         onRegisterClick = {
             val normalizedEmail = email.trim()
-
             when {
                 normalizedEmail.isBlank() || password.isBlank() || confirmPassword.isBlank() -> {
                     errorMessage = "Enter email and password"
@@ -66,23 +51,23 @@ fun RegisterRoute(
                 password != confirmPassword -> {
                     errorMessage = "The passwords you entered do not match"
                 }
-
                 else -> {
                     coroutineScope.launch {
                         val existingUser = userDao.findByEmail(normalizedEmail)
-
                         if (existingUser != null) {
-                            errorMessage = "An account with this Username already exists."
+                            errorMessage = "An account with this email already exists."
                         } else {
-                            userDao.insert(
+                            val code = (100000..999999).random().toString()
+                            val userId = userDao.insert(
                                 UserEntity(
                                     email = normalizedEmail,
                                     passwordHash = password,
-                                    isVerified = false
+                                    isVerified = false,
+                                    verificationCode = code
                                 )
                             )
                             errorMessage = null
-                            onRegisterSuccess()
+                            onRegisterSuccess(userId)
                         }
                     }
                 }
