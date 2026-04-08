@@ -11,26 +11,25 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.auction6.data.local.DatabaseProvider
 import com.example.auction6.data.local.ListingEntity
 
-// State Owner for Marketplace
+// State Owner for Listing Detail
 @Composable
-fun MarketplaceRoute(
-    modifier: Modifier = Modifier,
-    onLogoutSuccess: () -> Unit,
-    onListingClick: (listingId: Int) -> Unit
+fun ListingDetailRoute(
+    listingId: Int,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val listingDao = remember(context) { DatabaseProvider.get(context).listingDao() }
 
-    var listings by remember { mutableStateOf<List<ListingEntity>>(emptyList()) }
+    var listing by remember { mutableStateOf<ListingEntity?>(null) }
 
-    LaunchedEffect(Unit) {
-        listings = listingDao.getAllListings()
+    LaunchedEffect(listingId) {
+        listing = listingDao.getListingById(listingId)
     }
 
-    MarketplaceScreen(
-        listings = listings,
-        onListingClick = onListingClick,
-        onLogoutClick = { onLogoutSuccess() },
+    ListingDetailScreen(
+        listing = listing,
+        onBack = onBack,
         modifier = modifier
     )
 }
