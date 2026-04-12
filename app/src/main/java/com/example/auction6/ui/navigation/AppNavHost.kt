@@ -1,12 +1,17 @@
 package com.example.auction6.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.auction6.ui.create_listing.CreateListingRoute
 import com.example.auction6.ui.login.LoginRoute
 import com.example.auction6.ui.marketplace.ListingDetailRoute
 import com.example.auction6.ui.marketplace.MarketplaceRoute
@@ -16,6 +21,7 @@ import com.example.auction6.ui.verify.VerifyRoute
 @Composable
 fun AppNavHost(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    var marketplaceRefresh by remember { mutableStateOf(0) }
 
     NavHost(
         navController = navController,
@@ -73,6 +79,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
         composable(Route.Marketplace.route) {
             MarketplaceRoute(
+                refreshTrigger = marketplaceRefresh,
                 onLogoutSuccess = {
                     navController.navigate(Route.Login.route) {
                         popUpTo(Route.Marketplace.route) { inclusive = true }
@@ -80,6 +87,21 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                 },
                 onListingClick = { listingId ->
                     navController.navigate(Route.ListingDetail.createRoute(listingId))
+                },
+                onCreateListingClick = {
+                    navController.navigate(Route.CreateListing.route)
+                }
+            )
+        }
+
+        composable(Route.CreateListing.route) {
+            CreateListingRoute(
+                onSaved = {
+                    marketplaceRefresh++
+                    navController.popBackStack()
+                },
+                onCancel = {
+                    navController.popBackStack()
                 }
             )
         }

@@ -2,6 +2,7 @@ package com.example.auction6.ui.marketplace
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,11 +14,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.auction6.data.local.ListingEntity
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.text.style.TextAlign
 
 // Stateless UI for marketplace
 @Composable
@@ -25,17 +29,36 @@ fun MarketplaceScreen(
     listings: List<ListingEntity>,
     onListingClick: (listingId: Int) -> Unit,
     onLogoutClick: () -> Unit,
+    onCreateListingClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Row(
+    Column(modifier = modifier.statusBarsPadding()) {
+        // Title row
+        Text(
+            text = "Marketplace",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(top = 12.dp, start = 16.dp, end = 16.dp)
+        )
+
+        // Button bar: logout left, + List Item centered
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Text("Marketplace", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Button(onClick = onLogoutClick) { Text("Log out") }
+            Button(
+                onClick = onLogoutClick,
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) { Text("Log out") }
+
+            Button(
+                onClick = onCreateListingClick,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) { Text("+ List Item") }
         }
 
         if (listings.isEmpty()) {
