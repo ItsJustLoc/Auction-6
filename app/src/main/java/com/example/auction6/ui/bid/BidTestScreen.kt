@@ -1,3 +1,4 @@
+package com.example.auction6.ui.bid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.material3.*
@@ -5,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
+
 
 @Composable
 fun BidTestScreen() {
@@ -59,12 +61,23 @@ fun BidTestScreen() {
                 // 2. if invalid number -> resultMessage = "Please enter a valid number"
                 if (bidNumber == null) {
                     // show "invalid number"
+                    resultMessage = "Please enter a Valid Number"
                 } else {
                     // continue with 5% rule
+                    // 3. otherwise calculate minimum allowed bid
+                    val minimumBid = currentHighestBid * 1.05
+
+                    // 4. compare entered bid against minimum
+                    if (bidNumber >= minimumBid){
+                        resultMessage = "Valid Bid"
+                    }
+                    else {
+                        // 5. update resultMessage
+                        //number should be rounded off to 2 decimal spots
+                        resultMessage = "Invalid Bid! Bid must be at least %.2f".format(minimumBid)
+                    }
                 }
-                // 3. otherwise calculate minimum allowed bid
-                // 4. compare entered bid against minimum
-                // 5. update resultMessage
+
             },
             modifier = Modifier.fillMaxWidth()
         ) {
