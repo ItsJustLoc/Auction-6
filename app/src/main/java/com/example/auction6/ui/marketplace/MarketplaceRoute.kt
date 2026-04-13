@@ -15,15 +15,17 @@ import com.example.auction6.data.local.ListingEntity
 @Composable
 fun MarketplaceRoute(
     modifier: Modifier = Modifier,
+    refreshTrigger: Int = 0,
     onLogoutSuccess: () -> Unit,
-    onListingClick: (listingId: Int) -> Unit
+    onListingClick: (listingId: Int) -> Unit,
+    onCreateListingClick: () -> Unit
 ) {
     val context = LocalContext.current
     val listingDao = remember(context) { DatabaseProvider.get(context).listingDao() }
 
     var listings by remember { mutableStateOf<List<ListingEntity>>(emptyList()) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(refreshTrigger) {
         listings = listingDao.getAllListings()
     }
 
@@ -31,6 +33,7 @@ fun MarketplaceRoute(
         listings = listings,
         onListingClick = onListingClick,
         onLogoutClick = { onLogoutSuccess() },
+        onCreateListingClick = onCreateListingClick,
         modifier = modifier
     )
 }

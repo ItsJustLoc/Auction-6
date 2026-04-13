@@ -10,4 +10,5 @@ sealed class Route(val route: String) {
     object ListingDetail : Route("listing/{listingId}") {
         fun createRoute(listingId: Int) = "listing/$listingId"
     }
+    object CreateListing : Route("create_listing")
 }
