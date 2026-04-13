@@ -15,6 +15,7 @@ import com.example.auction6.data.local.ListingEntity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.auction6.ui.bid.BidSection
 
 // Stateless UI for listing detail
 @Composable
@@ -31,15 +32,28 @@ fun ListingDetailScreen(
         if (listing == null) {
             Text("Loading...")
         } else {
+            val safeListing = listing
             Text(listing.title, fontSize = 22.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(listing.description)
+            Text(safeListing.description)
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Starting Price: $${listing.startingPrice}", fontWeight = FontWeight.SemiBold)
+            Text("Starting Price: $${safeListing.startingPrice}", fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(4.dp))
             val endDate = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
-                .format(Date(listing.endTime))
+                .format(Date(safeListing.endTime))
             Text("Ends: $endDate")
+
+
+            //Bid Section
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Place a Bid",
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            BidSection(currentHighestBid = safeListing.startingPrice)
         }
+
+
     }
 }

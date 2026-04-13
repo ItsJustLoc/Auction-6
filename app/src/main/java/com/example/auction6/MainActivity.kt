@@ -11,7 +11,8 @@ import com.example.auction6.ui.navigation.AppNavHost
 import com.example.auction6.ui.theme.Auction6Theme
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class
+MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
