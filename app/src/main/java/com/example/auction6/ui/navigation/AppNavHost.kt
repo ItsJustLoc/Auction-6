@@ -23,6 +23,7 @@ import com.example.auction6.ui.verify.VerifyRoute
 fun AppNavHost(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     var marketplaceRefresh by remember { mutableStateOf(0) }
+    var listingDetailRefresh by remember { mutableStateOf(0) }
 
     NavHost(
         navController = navController,
@@ -114,6 +115,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
             val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
             ListingDetailRoute(
                 listingId = listingId,
+                refreshTrigger = listingDetailRefresh,
                 onBack = { navController.popBackStack() },
                 onPlaceBidClick = {
                     navController.navigate(Route.PlaceBid.createRoute(listingId))
@@ -128,7 +130,10 @@ fun AppNavHost(modifier: Modifier = Modifier) {
             val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
             PlaceBidRoute(
                 listingId = listingId,
-                onBack = { navController.popBackStack() }
+                onBack = {
+                    listingDetailRefresh++
+                    navController.popBackStack()
+                }
             )
         }
     }
