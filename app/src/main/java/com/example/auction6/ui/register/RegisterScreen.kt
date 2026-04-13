@@ -32,7 +32,7 @@ fun RegisterScreen(
         TextField(
             value = state.email,
             onValueChange = onEmailChange,
-            label = { Text("Enter Email") }
+            label = { Text("Enter Email/Username") }
         )
 
         TextField(

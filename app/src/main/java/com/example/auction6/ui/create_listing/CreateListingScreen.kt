@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFrom
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
@@ -35,7 +37,10 @@ fun CreateListingScreen(
     onCancelClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(modifier = modifier
+        .statusBarsPadding()
+        .padding(16.dp))
+    {
         Text("Create Listing", fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
 
