@@ -10,5 +10,6 @@ data class ListingEntity(
     val description: String,
     val startingPrice: Double,
     val endTime: Long,       // stored as epoch milliseconds
-    val sellerId: Int        // references users.id
+    val sellerId: Int,       // references users.id
+    val category: String = "Other"
 )

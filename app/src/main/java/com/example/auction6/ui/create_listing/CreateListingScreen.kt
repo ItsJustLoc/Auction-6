@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.auction6.data.local.LISTING_CATEGORIES
 
 // Stateless UI for Create Listing form
 @Composable
@@ -32,6 +34,8 @@ fun CreateListingScreen(
     onPriceChange: (String) -> Unit,
     durationHours: String,
     onDurationChange: (String) -> Unit,
+    category: String,
+    onCategoryChange: (String) -> Unit,
     errorMessage: String?,
     onSaveClick: () -> Unit,
     onCancelClick: () -> Unit,
@@ -80,6 +84,20 @@ fun CreateListingScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text("Category", fontWeight = FontWeight.SemiBold)
+        Spacer(modifier = Modifier.height(4.dp))
+        // Exclude "All" — that's only for filtering, not for creating
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(LISTING_CATEGORIES.filter { it != "All" }) { cat ->
+                if (cat == category) {
+                    Button(onClick = { onCategoryChange(cat) }) { Text(cat) }
+                } else {
+                    OutlinedButton(onClick = { onCategoryChange(cat) }) { Text(cat) }
+                }
+            }
+        }
 
         if (errorMessage != null) {
             Spacer(modifier = Modifier.height(8.dp))

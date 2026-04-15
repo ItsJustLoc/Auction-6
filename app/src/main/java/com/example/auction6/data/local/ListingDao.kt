@@ -14,4 +14,7 @@ interface ListingDao {
 
     @Query("SELECT * FROM listings WHERE id = :listingId")
     suspend fun getListingById(listingId: Int): ListingEntity?
+
+    @Query("SELECT * FROM listings WHERE category = :category")
+    suspend fun getListingsByCategory(category: String): List<ListingEntity>
 }

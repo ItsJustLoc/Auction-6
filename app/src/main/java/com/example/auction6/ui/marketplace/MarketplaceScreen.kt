@@ -8,25 +8,30 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.auction6.data.local.LISTING_CATEGORIES
 import com.example.auction6.data.local.ListingEntity
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.ui.text.style.TextAlign
 
 // Stateless UI for marketplace
 @Composable
 fun MarketplaceScreen(
     listings: List<ListingEntity>,
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit,
     onListingClick: (listingId: Int) -> Unit,
     onLogoutClick: () -> Unit,
     onCreateListingClick: () -> Unit,
@@ -59,6 +64,20 @@ fun MarketplaceScreen(
                 onClick = onCreateListingClick,
                 modifier = Modifier.align(Alignment.CenterEnd)
             ) { Text("+ List Item") }
+        }
+
+        // Category filter chips
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(LISTING_CATEGORIES) { cat ->
+                if (cat == selectedCategory) {
+                    Button(onClick = { onCategorySelected(cat) }) { Text(cat) }
+                } else {
+                    OutlinedButton(onClick = { onCategorySelected(cat) }) { Text(cat) }
+                }
+            }
         }
 
         if (listings.isEmpty()) {

@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.example.auction6.data.local.DatabaseProvider
+import com.example.auction6.data.local.LISTING_CATEGORIES
 import com.example.auction6.data.local.ListingEntity
 
 // State Owner for Marketplace
@@ -24,13 +25,20 @@ fun MarketplaceRoute(
     val listingDao = remember(context) { DatabaseProvider.get(context).listingDao() }
 
     var listings by remember { mutableStateOf<List<ListingEntity>>(emptyList()) }
+    var selectedCategory by remember { mutableStateOf("All") }
 
-    LaunchedEffect(refreshTrigger) {
-        listings = listingDao.getAllListings()
+    LaunchedEffect(refreshTrigger, selectedCategory) {
+        listings = if (selectedCategory == "All") {
+            listingDao.getAllListings()
+        } else {
+            listingDao.getListingsByCategory(selectedCategory)
+        }
     }
 
     MarketplaceScreen(
         listings = listings,
+        selectedCategory = selectedCategory,
+        onCategorySelected = { selectedCategory = it },
         onListingClick = onListingClick,
         onLogoutClick = { onLogoutSuccess() },
         onCreateListingClick = onCreateListingClick,
