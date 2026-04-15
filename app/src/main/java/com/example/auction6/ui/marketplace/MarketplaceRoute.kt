@@ -19,7 +19,9 @@ fun MarketplaceRoute(
     refreshTrigger: Int = 0,
     onLogoutSuccess: () -> Unit,
     onListingClick: (listingId: Int) -> Unit,
-    onCreateListingClick: () -> Unit
+    onCreateListingClick: () -> Unit,
+    onBuyerHistoryClick: () -> Unit,
+    onSellerHistoryClick: () -> Unit
 ) {
     val context = LocalContext.current
     val listingDao = remember(context) { DatabaseProvider.get(context).listingDao() }
@@ -42,6 +44,8 @@ fun MarketplaceRoute(
         onListingClick = onListingClick,
         onLogoutClick = { onLogoutSuccess() },
         onCreateListingClick = onCreateListingClick,
+        onBuyerHistoryClick = onBuyerHistoryClick,
+        onSellerHistoryClick = onSellerHistoryClick,
         modifier = modifier
     )
 }

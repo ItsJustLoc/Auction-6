@@ -14,4 +14,6 @@ sealed class Route(val route: String) {
     object PlaceBid : Route("place_bid/{listingId}") {
         fun createRoute(listingId: Int) = "place_bid/$listingId"
     }
+    object BuyerHistory : Route("buyer_history")
+    object SellerHistory : Route("seller_history")
 }

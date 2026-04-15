@@ -35,6 +35,8 @@ fun MarketplaceScreen(
     onListingClick: (listingId: Int) -> Unit,
     onLogoutClick: () -> Unit,
     onCreateListingClick: () -> Unit,
+    onBuyerHistoryClick: () -> Unit,
+    onSellerHistoryClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.statusBarsPadding()) {
@@ -64,6 +66,23 @@ fun MarketplaceScreen(
                 onClick = onCreateListingClick,
                 modifier = Modifier.align(Alignment.CenterEnd)
             ) { Text("+ List Item") }
+        }
+
+        // History row: Purchases left, Sales right
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp)
+        ) {
+            OutlinedButton(
+                onClick = onBuyerHistoryClick,
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) { Text("Purchases") }
+
+            OutlinedButton(
+                onClick = onSellerHistoryClick,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) { Text("Sales") }
         }
 
         // Category filter chips

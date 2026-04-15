@@ -13,6 +13,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.auction6.ui.bid.PlaceBidRoute
 import com.example.auction6.ui.create_listing.CreateListingRoute
+import com.example.auction6.ui.history.BuyerHistoryRoute
+import com.example.auction6.ui.history.SellerHistoryRoute
 import com.example.auction6.ui.login.LoginRoute
 import com.example.auction6.ui.marketplace.ListingDetailRoute
 import com.example.auction6.ui.marketplace.MarketplaceRoute
@@ -92,6 +94,12 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                 },
                 onCreateListingClick = {
                     navController.navigate(Route.CreateListing.route)
+                },
+                onBuyerHistoryClick = {
+                    navController.navigate(Route.BuyerHistory.route)
+                },
+                onSellerHistoryClick = {
+                    navController.navigate(Route.SellerHistory.route)
                 }
             )
         }
@@ -121,6 +129,14 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                     navController.navigate(Route.PlaceBid.createRoute(listingId))
                 }
             )
+        }
+
+        composable(Route.BuyerHistory.route) {
+            BuyerHistoryRoute(onBack = { navController.popBackStack() })
+        }
+
+        composable(Route.SellerHistory.route) {
+            SellerHistoryRoute(onBack = { navController.popBackStack() })
         }
 
         composable(
