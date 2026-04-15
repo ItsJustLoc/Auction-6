@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -99,23 +101,37 @@ fun MarketplaceScreen(
             }
         }
 
-        if (listings.isEmpty()) {
-            Text(
-                text = "No listings yet.",
-                modifier = Modifier.padding(16.dp)
-            )
-        } else {
-            LazyColumn(contentPadding = PaddingValues(16.dp)) {
-                items(listings) { listing ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                            .clickable { onListingClick(listing.id) }
-                    ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(listing.title, fontWeight = FontWeight.SemiBold)
-                            Text("Starting at $${listing.startingPrice}")
+        // Content area fills remaining vertical space to eliminate bottom whitespace
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            if (listings.isEmpty()) {
+                Text(
+                    text = "No listings yet.",
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    items(listings) { listing ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                                .clickable { onListingClick(listing.id) }
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(listing.title, fontWeight = FontWeight.SemiBold)
+                                Text(
+                                    text = listing.category,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Starting at $${listing.startingPrice}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                         }
                     }
                 }
