@@ -30,12 +30,14 @@ fun PlaceBidRoute(
     var bidInput by remember { mutableStateOf("") }
     var resultMessage by remember { mutableStateOf("") }
     var isSuccess by remember { mutableStateOf(false) }
+    var bidHistory by remember { mutableStateOf<List<BidEntity>>(emptyList()) }
 
-    // Load listing and current highest bid
+    // Load listing, current highest bid, and bid history
     LaunchedEffect(listingId) {
         listing = db.listingDao().getListingById(listingId)
         val highestBid = db.bidDao().getHighestBid(listingId)
         currentHighestBid = highestBid?.amount ?: listing?.startingPrice ?: 0.0
+        bidHistory = db.bidDao().getBidsForListing(listingId)
     }
 
     val minimumBid = currentHighestBid * 1.05
@@ -48,6 +50,7 @@ fun PlaceBidRoute(
         onBidInputChange = { bidInput = it },
         resultMessage = resultMessage,
         isSuccess = isSuccess,
+        bidHistory = bidHistory,
         onPlaceBidClick = {
             val bidNumber = bidInput.toDoubleOrNull()
             when {
@@ -69,7 +72,9 @@ fun PlaceBidRoute(
                                 timestamp = System.currentTimeMillis()
                             )
                         )
+                        // Refresh state after successful bid
                         currentHighestBid = bidNumber
+                        bidHistory = db.bidDao().getBidsForListing(listingId)
                         bidInput = ""
                         isSuccess = true
                         resultMessage = "Bid of $${"%.2f".format(bidNumber)} placed successfully!"
