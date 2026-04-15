@@ -19,6 +19,7 @@ import com.example.auction6.data.local.OrderEntity
 @Composable
 fun ListingDetailRoute(
     listingId: Int,
+    currentUserId: Long = 0L,
     refreshTrigger: Int = 0,
     onBack: () -> Unit,
     onPlaceBidClick: () -> Unit,
@@ -63,14 +64,23 @@ fun ListingDetailRoute(
         auctionEnded = ended
     }
 
+    val isSeller = listing != null && listing!!.sellerId == currentUserId.toInt()
+
     ListingDetailScreen(
         listing = listing,
         bidHistory = bidHistory,
         auctionEnded = auctionEnded,
         highestBid = highestBid,
         order = order,
+        isSeller = isSeller,
         onBack = onBack,
         onPlaceBidClick = onPlaceBidClick,
+        onDeleteClick = {
+            scope.launch {
+                db.listingDao().deleteListingById(listingId)
+                onBack()
+            }
+        },
         onUpdateStatus = { orderId, newStatus ->
             scope.launch {
                 db.orderDao().updateOrderStatus(orderId, newStatus)

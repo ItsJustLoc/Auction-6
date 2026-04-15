@@ -16,6 +16,7 @@ import com.example.auction6.data.local.ListingEntity
 @Composable
 fun MarketplaceRoute(
     modifier: Modifier = Modifier,
+    currentUserId: Long = 0L,
     refreshTrigger: Int = 0,
     onLogoutSuccess: () -> Unit,
     onListingClick: (listingId: Int) -> Unit,
@@ -39,6 +40,7 @@ fun MarketplaceRoute(
 
     MarketplaceScreen(
         listings = listings,
+        currentUserId = currentUserId,
         selectedCategory = selectedCategory,
         onCategorySelected = { selectedCategory = it },
         onListingClick = onListingClick,

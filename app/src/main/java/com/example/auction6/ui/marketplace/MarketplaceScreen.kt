@@ -32,6 +32,7 @@ import com.example.auction6.data.local.ListingEntity
 @Composable
 fun MarketplaceScreen(
     listings: List<ListingEntity>,
+    currentUserId: Long = 0L,
     selectedCategory: String,
     onCategorySelected: (String) -> Unit,
     onListingClick: (listingId: Int) -> Unit,
@@ -121,7 +122,19 @@ fun MarketplaceScreen(
                                 .clickable { onListingClick(listing.id) }
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
-                                Text(listing.title, fontWeight = FontWeight.SemiBold)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(listing.title, fontWeight = FontWeight.SemiBold)
+                                    if (listing.sellerId == currentUserId.toInt()) {
+                                        Text(
+                                            text = "Your listing",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.tertiary
+                                        )
+                                    }
+                                }
                                 Text(
                                     text = listing.category,
                                     style = MaterialTheme.typography.labelSmall,

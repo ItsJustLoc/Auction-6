@@ -85,6 +85,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
         composable(Route.Marketplace.route) {
             MarketplaceRoute(
+                currentUserId = currentUserId,
                 refreshTrigger = marketplaceRefresh,
                 onLogoutSuccess = {
                     navController.navigate(Route.Login.route) {
@@ -126,6 +127,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
             val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
             ListingDetailRoute(
                 listingId = listingId,
+                currentUserId = currentUserId,
                 refreshTrigger = listingDetailRefresh,
                 onBack = { navController.popBackStack() },
                 onPlaceBidClick = {

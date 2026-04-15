@@ -79,7 +79,7 @@ fun CreateListingScreen(
         OutlinedTextField(
             value = durationHours,
             onValueChange = onDurationChange,
-            label = { Text("Duration (hours)") },
+            label = { Text("Duration (minutes)") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()

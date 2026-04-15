@@ -40,6 +40,7 @@ fun PlaceBidRoute(
     }
 
     val minimumBid = currentHighestBid * 1.05
+    val isOwnListing = listing != null && listing!!.sellerId == currentUserId.toInt()
 
     PlaceBidScreen(
         listingTitle = listing?.title ?: "Loading...",
@@ -49,9 +50,14 @@ fun PlaceBidRoute(
         onBidInputChange = { bidInput = it },
         resultMessage = resultMessage,
         isSuccess = isSuccess,
+        isOwnListing = isOwnListing,
         onPlaceBidClick = {
             val bidNumber = bidInput.toDoubleOrNull()
             when {
+                isOwnListing -> {
+                    isSuccess = false
+                    resultMessage = "You cannot bid on your own listing"
+                }
                 bidNumber == null -> {
                     isSuccess = false
                     resultMessage = "Please enter a valid number"

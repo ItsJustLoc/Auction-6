@@ -31,6 +31,7 @@ fun PlaceBidScreen(
     onBidInputChange: (String) -> Unit,
     resultMessage: String,
     isSuccess: Boolean,
+    isOwnListing: Boolean,
     onPlaceBidClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -53,39 +54,48 @@ fun PlaceBidScreen(
         Text(listingTitle, fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text("Current Highest Bid: $${"%.2f".format(currentHighestBid)}")
-        Text(
-            text = "Minimum Bid Required: $${"%.2f".format(minimumBid)}",
-            fontWeight = FontWeight.SemiBold
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = bidInput,
-            onValueChange = onBidInputChange,
-            label = { Text("Enter your bid ($)") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (resultMessage.isNotEmpty()) {
+        if (isOwnListing) {
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = resultMessage,
-                color = if (isSuccess) Color(0xFF2E7D32) else Color.Red
+                text = "You cannot bid on your own listing.",
+                color = Color.Red,
+                fontWeight = FontWeight.SemiBold
             )
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+        } else {
+            Text("Current Highest Bid: $${"%.2f".format(currentHighestBid)}")
+            Text(
+                text = "Minimum Bid Required: $${"%.2f".format(minimumBid)}",
+                fontWeight = FontWeight.SemiBold
+            )
 
-        // Place Bid button centered
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Button(
-                onClick = onPlaceBidClick,
-                modifier = Modifier.align(Alignment.Center)
-            ) { Text("Place Bid") }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = bidInput,
+                onValueChange = onBidInputChange,
+                label = { Text("Enter your bid ($)") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (resultMessage.isNotEmpty()) {
+                Text(
+                    text = resultMessage,
+                    color = if (isSuccess) Color(0xFF2E7D32) else Color.Red
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Place Bid button centered
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onPlaceBidClick,
+                    modifier = Modifier.align(Alignment.Center)
+                ) { Text("Place Bid") }
+            }
         }
     }
 }

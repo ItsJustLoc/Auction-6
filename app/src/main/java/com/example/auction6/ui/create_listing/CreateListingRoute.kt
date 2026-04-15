@@ -55,7 +55,7 @@ fun CreateListingRoute(
                 parsedHours == null || parsedHours <= 0 -> errorMessage = "Enter a valid duration"
                 else -> {
                     errorMessage = null
-                    val endTime = System.currentTimeMillis() + parsedHours * 3_600_000L
+                    val endTime = System.currentTimeMillis() + parsedHours * 60_000L
                     scope.launch {
                         listingDao.insertListing(
                             ListingEntity(
