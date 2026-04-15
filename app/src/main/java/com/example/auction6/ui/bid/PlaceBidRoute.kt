@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun PlaceBidRoute(
     listingId: Int,
+    currentUserId: Long = 0L,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -64,7 +65,7 @@ fun PlaceBidRoute(
                         db.bidDao().insertBid(
                             BidEntity(
                                 listingId = listingId,
-                                bidderId = 0, // placeholder until user sessions are added
+                                bidderId = currentUserId.toInt(),
                                 amount = bidNumber,
                                 timestamp = System.currentTimeMillis()
                             )

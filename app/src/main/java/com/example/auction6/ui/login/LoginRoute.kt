@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 // State Owner
 @Composable
-fun LoginRoute(onLoginSuccess: () -> Unit,
+fun LoginRoute(onLoginSuccess: (userId: Long) -> Unit,
                onGoToRegister: () -> Unit,
                onGoToVerify: (userId: Long) -> Unit,
                modifier: Modifier = Modifier)
@@ -74,7 +74,7 @@ fun LoginRoute(onLoginSuccess: () -> Unit,
                         }
                         else -> {
                             errorMessage = null
-                            onLoginSuccess()
+                            onLoginSuccess(user.id)
                         }
                     }
                 }

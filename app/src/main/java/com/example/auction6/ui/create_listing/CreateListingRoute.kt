@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 // State owner for Create Listing
 @Composable
 fun CreateListingRoute(
+    currentUserId: Long = 0L,
     onSaved: () -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier
@@ -62,7 +63,7 @@ fun CreateListingRoute(
                                 description = description.trim(),
                                 startingPrice = parsedPrice,
                                 endTime = endTime,
-                                sellerId = 0, // placeholder until user sessions are added
+                                sellerId = currentUserId.toInt(),
                                 category = category
                             )
                         )

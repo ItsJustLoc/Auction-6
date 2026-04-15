@@ -24,6 +24,7 @@ import com.example.auction6.ui.verify.VerifyRoute
 @Composable
 fun AppNavHost(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    var currentUserId by remember { mutableStateOf(0L) }
     var marketplaceRefresh by remember { mutableStateOf(0) }
     var listingDetailRefresh by remember { mutableStateOf(0) }
 
@@ -34,7 +35,8 @@ fun AppNavHost(modifier: Modifier = Modifier) {
     ) {
         composable(Route.Login.route) {
             LoginRoute(
-                onLoginSuccess = {
+                onLoginSuccess = { userId ->
+                    currentUserId = userId
                     navController.navigate(Route.Marketplace.route) {
                         popUpTo(Route.Login.route) { inclusive = true }
                     }
@@ -106,6 +108,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
         composable(Route.CreateListing.route) {
             CreateListingRoute(
+                currentUserId = currentUserId,
                 onSaved = {
                     marketplaceRefresh++
                     navController.popBackStack()
@@ -132,11 +135,17 @@ fun AppNavHost(modifier: Modifier = Modifier) {
         }
 
         composable(Route.BuyerHistory.route) {
-            BuyerHistoryRoute(onBack = { navController.popBackStack() })
+            BuyerHistoryRoute(
+                currentUserId = currentUserId,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(Route.SellerHistory.route) {
-            SellerHistoryRoute(onBack = { navController.popBackStack() })
+            SellerHistoryRoute(
+                currentUserId = currentUserId,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(
@@ -146,6 +155,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
             val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
             PlaceBidRoute(
                 listingId = listingId,
+                currentUserId = currentUserId,
                 onBack = {
                     listingDetailRefresh++
                     navController.popBackStack()

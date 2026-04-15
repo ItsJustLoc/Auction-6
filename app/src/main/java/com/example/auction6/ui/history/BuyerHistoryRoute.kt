@@ -14,6 +14,7 @@ import com.example.auction6.data.local.OrderEntity
 // State owner for Buyer History
 @Composable
 fun BuyerHistoryRoute(
+    currentUserId: Long = 0L,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -22,8 +23,8 @@ fun BuyerHistoryRoute(
 
     var items by remember { mutableStateOf<List<Pair<OrderEntity, String>>>(emptyList()) }
 
-    LaunchedEffect(Unit) {
-        val orders = db.orderDao().getOrdersByBuyer(0) // 0 = placeholder buyerId
+    LaunchedEffect(currentUserId) {
+        val orders = db.orderDao().getOrdersByBuyer(currentUserId.toInt())
         items = orders.map { order ->
             val title = db.listingDao().getListingById(order.listingId)?.title ?: "Unknown"
             order to title
