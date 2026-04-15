@@ -6,14 +6,15 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [UserEntity::class, ListingEntity::class, BidEntity::class],
-    version = 4,
+    entities = [UserEntity::class, ListingEntity::class, BidEntity::class, OrderEntity::class],
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun listingDao(): ListingDao
     abstract fun bidDao(): BidDao
+    abstract fun orderDao(): OrderDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -51,6 +52,23 @@ abstract class AppDatabase : RoomDatabase() {
                         bidderId INTEGER NOT NULL,
                         amount REAL NOT NULL,
                         timestamp INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS orders (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        listingId INTEGER NOT NULL,
+                        buyerId INTEGER NOT NULL,
+                        sellerId INTEGER NOT NULL,
+                        finalPrice REAL NOT NULL,
+                        status TEXT NOT NULL
                     )
                     """.trimIndent()
                 )

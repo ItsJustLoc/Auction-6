@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.auction6.data.local.BidEntity
 import com.example.auction6.data.local.ListingEntity
+import com.example.auction6.data.local.OrderEntity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -34,6 +35,7 @@ fun ListingDetailScreen(
     bidHistory: List<BidEntity>,
     auctionEnded: Boolean,
     highestBid: BidEntity?,
+    order: OrderEntity?,
     onBack: () -> Unit,
     onPlaceBidClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -93,6 +95,14 @@ fun ListingDetailScreen(
                             text = "Winning Bid: $${"%.2f".format(highestBid.amount)}",
                             fontWeight = FontWeight.SemiBold
                         )
+                        if (order != null) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Order Status: ${order.status}",
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF1565C0)
+                            )
+                        }
                     } else {
                         Text(
                             text = "Auction Ended — No Bids",
