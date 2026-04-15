@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.auction6.ui.bid.PlaceBidRoute
 import com.example.auction6.ui.create_listing.CreateListingRoute
 import com.example.auction6.ui.login.LoginRoute
 import com.example.auction6.ui.marketplace.ListingDetailRoute
@@ -112,6 +113,20 @@ fun AppNavHost(modifier: Modifier = Modifier) {
         ) { backStackEntry ->
             val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
             ListingDetailRoute(
+                listingId = listingId,
+                onBack = { navController.popBackStack() },
+                onPlaceBidClick = {
+                    navController.navigate(Route.PlaceBid.createRoute(listingId))
+                }
+            )
+        }
+
+        composable(
+            route = Route.PlaceBid.route,
+            arguments = listOf(navArgument("listingId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
+            PlaceBidRoute(
                 listingId = listingId,
                 onBack = { navController.popBackStack() }
             )

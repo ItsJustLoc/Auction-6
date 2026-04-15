@@ -16,6 +16,7 @@ import com.example.auction6.data.local.ListingEntity
 fun ListingDetailRoute(
     listingId: Int,
     onBack: () -> Unit,
+    onPlaceBidClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -30,6 +31,7 @@ fun ListingDetailRoute(
     ListingDetailScreen(
         listing = listing,
         onBack = onBack,
+        onPlaceBidClick = onPlaceBidClick,
         modifier = modifier
     )
 }

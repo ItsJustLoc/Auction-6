@@ -2,7 +2,7 @@ package com.example.auction6.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
+//Table for Bid entity with below attributes
 @Entity(tableName = "bids")
 data class BidEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,

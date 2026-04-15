@@ -3,7 +3,7 @@ package com.example.auction6.data.local
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-
+//Data Access Object (DAO) for BidEntity
 @Dao
 interface BidDao {
     @Insert

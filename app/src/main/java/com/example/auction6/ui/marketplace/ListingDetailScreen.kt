@@ -1,12 +1,16 @@
 package com.example.auction6.ui.marketplace
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -21,10 +25,17 @@ import java.util.Locale
 fun ListingDetailScreen(
     listing: ListingEntity?,
     onBack: () -> Unit,
+    onPlaceBidClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.padding(16.dp)) {
-        Button(onClick = onBack) { Text("Back") }
+    Column(modifier = modifier.statusBarsPadding().padding(16.dp)) {
+        // Back on left
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = onBack,
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) { Text("Back") }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -40,6 +51,16 @@ fun ListingDetailScreen(
             val endDate = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
                 .format(Date(listing.endTime))
             Text("Ends: $endDate")
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Place Bid centered
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onPlaceBidClick,
+                    modifier = Modifier.align(Alignment.Center)
+                ) { Text("Place Bid") }
+            }
         }
     }
 }
