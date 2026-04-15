@@ -5,9 +5,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 import com.example.auction6.data.local.BidEntity
 import com.example.auction6.data.local.DatabaseProvider
 import com.example.auction6.data.local.ListingEntity
@@ -24,6 +26,7 @@ fun ListingDetailRoute(
 ) {
     val context = LocalContext.current
     val db = remember(context) { DatabaseProvider.get(context) }
+    val scope = rememberCoroutineScope()
 
     var listing by remember { mutableStateOf<ListingEntity?>(null) }
     var bidHistory by remember { mutableStateOf<List<BidEntity>>(emptyList()) }
@@ -68,6 +71,12 @@ fun ListingDetailRoute(
         order = order,
         onBack = onBack,
         onPlaceBidClick = onPlaceBidClick,
+        onUpdateStatus = { orderId, newStatus ->
+            scope.launch {
+                db.orderDao().updateOrderStatus(orderId, newStatus)
+                order = db.orderDao().getOrderByListingId(listingId)
+            }
+        },
         modifier = modifier
     )
 }

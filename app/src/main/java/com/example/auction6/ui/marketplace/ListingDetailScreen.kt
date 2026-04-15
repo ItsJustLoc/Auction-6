@@ -38,6 +38,7 @@ fun ListingDetailScreen(
     order: OrderEntity?,
     onBack: () -> Unit,
     onPlaceBidClick: () -> Unit,
+    onUpdateStatus: (orderId: Int, newStatus: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -96,12 +97,32 @@ fun ListingDetailScreen(
                             fontWeight = FontWeight.SemiBold
                         )
                         if (order != null) {
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Order Status: ${order.status}",
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color(0xFF1565C0)
                             )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            // Shipping state buttons (both visible since IDs are placeholder 0)
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                when (order.status) {
+                                    OrderEntity.STATUS_PURCHASED -> Button(
+                                        onClick = { onUpdateStatus(order.id, OrderEntity.STATUS_SHIPPED) },
+                                        modifier = Modifier.align(Alignment.Center)
+                                    ) { Text("Mark as Shipped") }
+                                    OrderEntity.STATUS_SHIPPED -> Button(
+                                        onClick = { onUpdateStatus(order.id, OrderEntity.STATUS_DELIVERED) },
+                                        modifier = Modifier.align(Alignment.Center)
+                                    ) { Text("Confirm Delivery") }
+                                    OrderEntity.STATUS_DELIVERED -> Text(
+                                        text = "Delivered",
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF2E7D32),
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
+                            }
                         }
                     } else {
                         Text(
