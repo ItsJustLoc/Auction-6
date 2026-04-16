@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 
-// Data Access Object (DAO) for OrderEntity
 @Dao
 interface OrderDao {
     @Insert
@@ -14,15 +13,21 @@ interface OrderDao {
     @Query("SELECT * FROM orders WHERE listingId = :listingId LIMIT 1")
     suspend fun getOrderByListingId(listingId: Int): OrderEntity?
 
-    // Buyer history (buyerId = 0 placeholder for now)
     @Query("SELECT * FROM orders WHERE buyerId = :buyerId")
     suspend fun getOrdersByBuyer(buyerId: Int): List<OrderEntity>
 
-    // Seller history (sellerId = 0 placeholder for now)
     @Query("SELECT * FROM orders WHERE sellerId = :sellerId")
     suspend fun getOrdersBySeller(sellerId: Int): List<OrderEntity>
 
-    // Shipping state transitions (milestone 14)
-    @Query("UPDATE orders SET status = :status WHERE id = :orderId")
-    suspend fun updateOrderStatus(orderId: Int, status: String)
+    @Query("UPDATE orders SET paymentStatus = :paymentStatus WHERE id = :orderId")
+    suspend fun updatePaymentStatus(orderId: Int, paymentStatus: String)
+
+    @Query("UPDATE orders SET shippingStatus = :shippingStatus WHERE id = :orderId")
+    suspend fun updateShippingStatus(orderId: Int, shippingStatus: String)
+
+    @Query("UPDATE orders SET shippingAddress = :address WHERE id = :orderId")
+    suspend fun updateShippingAddress(orderId: Int, address: String)
+
+    @Query("DELETE FROM orders WHERE listingId = :listingId")
+    suspend fun deleteOrderByListingId(listingId: Int)
 }

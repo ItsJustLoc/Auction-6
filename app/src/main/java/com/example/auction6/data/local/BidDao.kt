@@ -16,4 +16,7 @@ interface BidDao {
     // Get the highest bid for a listing (needed for 5% rule in milestone 10)
     @Query("SELECT * FROM bids WHERE listingId = :listingId ORDER BY amount DESC LIMIT 1")
     suspend fun getHighestBid(listingId: Int): BidEntity?
+
+    @Query("DELETE FROM bids WHERE listingId = :listingId")
+    suspend fun deleteAllBidsForListing(listingId: Int)
 }

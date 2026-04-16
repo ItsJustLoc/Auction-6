@@ -23,6 +23,7 @@ fun ListingDetailRoute(
     refreshTrigger: Int = 0,
     onBack: () -> Unit,
     onPlaceBidClick: () -> Unit,
+    onBuyNowClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -40,22 +41,24 @@ fun ListingDetailRoute(
         val bids = db.bidDao().getBidsForListing(listingId)
         val topBid = db.bidDao().getHighestBid(listingId)
         val ended = loaded != null && loaded.endTime < System.currentTimeMillis()
+        val existingOrder = db.orderDao().getOrderByListingId(listingId)
 
-        // Auto-create order if auction ended with a winning bid and no order exists yet
-        if (ended && topBid != null && loaded != null) {
-            val existing = db.orderDao().getOrderByListingId(listingId)
-            if (existing == null) {
-                db.orderDao().insertOrder(
-                    OrderEntity(
-                        listingId = listingId,
-                        buyerId = topBid.bidderId,
-                        sellerId = loaded.sellerId,
-                        finalPrice = topBid.amount,
-                        status = OrderEntity.STATUS_PURCHASED
-                    )
+        // Auto-create order if auction closed by time with a winning bid (and no order yet)
+        if (ended && topBid != null && loaded != null && existingOrder == null) {  // loaded non-null implied by ended check
+            db.orderDao().insertOrder(
+                OrderEntity(
+                    listingId = listingId,
+                    buyerId = topBid.bidderId,
+                    sellerId = loaded.sellerId,
+                    finalPrice = topBid.amount,
+                    paymentStatus = OrderEntity.PAYMENT_AUTHORIZED,
+                    shippingStatus = OrderEntity.SHIP_NOT_SHIPPED,
+                    orderType = OrderEntity.ORDER_TYPE_AUCTION
                 )
-            }
+            )
             order = db.orderDao().getOrderByListingId(listingId)
+        } else {
+            order = existingOrder
         }
 
         listing = loaded
@@ -65,6 +68,7 @@ fun ListingDetailRoute(
     }
 
     val isSeller = listing != null && listing!!.sellerId == currentUserId.toInt()
+    val isBuyer  = order != null && order!!.buyerId == currentUserId.toInt()
 
     ListingDetailScreen(
         listing = listing,
@@ -73,18 +77,36 @@ fun ListingDetailRoute(
         highestBid = highestBid,
         order = order,
         isSeller = isSeller,
+        isBuyer = isBuyer,
         onBack = onBack,
         onPlaceBidClick = onPlaceBidClick,
+        onBuyNowClick = onBuyNowClick,
         onDeleteClick = {
             scope.launch {
                 db.listingDao().deleteListingById(listingId)
                 onBack()
             }
         },
-        onUpdateStatus = { orderId, newStatus ->
+        onUpdateShipping = { orderId, newShippingStatus ->
             scope.launch {
-                db.orderDao().updateOrderStatus(orderId, newStatus)
+                db.orderDao().updateShippingStatus(orderId, newShippingStatus)
                 order = db.orderDao().getOrderByListingId(listingId)
+            }
+        },
+        onRelistClick = {
+            scope.launch {
+                // Remove failed order and all bids, then reopen the listing for 30 minutes
+                db.orderDao().deleteOrderByListingId(listingId)
+                db.bidDao().deleteAllBidsForListing(listingId)
+                val newEndTime = System.currentTimeMillis() + 30 * 60_000L
+                db.listingDao().updateEndTime(listingId, newEndTime)
+                // Refresh local state
+                val refreshed = db.listingDao().getListingById(listingId)
+                listing = refreshed
+                bidHistory = emptyList()
+                highestBid = null
+                auctionEnded = false
+                order = null
             }
         },
         modifier = modifier

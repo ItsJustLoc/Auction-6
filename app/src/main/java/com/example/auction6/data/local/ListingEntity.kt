@@ -11,5 +11,6 @@ data class ListingEntity(
     val startingPrice: Double,
     val endTime: Long,       // stored as epoch milliseconds
     val sellerId: Int,       // references users.id
-    val category: String = "Other"
+    val category: String = "Other",
+    val buyNowPrice: Double = 0.0   // 0.0 means no Buy Now option
 )

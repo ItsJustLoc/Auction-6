@@ -36,6 +36,8 @@ fun CreateListingScreen(
     onDurationChange: (String) -> Unit,
     category: String,
     onCategoryChange: (String) -> Unit,
+    buyNowPrice: String,
+    onBuyNowPriceChange: (String) -> Unit,
     errorMessage: String?,
     onSaveClick: () -> Unit,
     onCancelClick: () -> Unit,
@@ -70,6 +72,16 @@ fun CreateListingScreen(
             value = price,
             onValueChange = onPriceChange,
             label = { Text("Starting Price ($)") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = buyNowPrice,
+            onValueChange = onBuyNowPriceChange,
+            label = { Text("Buy Now Price ($) — optional") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.fillMaxWidth()

@@ -30,6 +30,7 @@ fun CreateListingRoute(
     var price by remember { mutableStateOf("") }
     var durationHours by remember { mutableStateOf("") }
     var category by remember { mutableStateOf(LISTING_CATEGORIES.last()) } // defaults to "Other"
+    var buyNowPrice by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     CreateListingScreen(
@@ -43,16 +44,21 @@ fun CreateListingRoute(
         onDurationChange = { durationHours = it },
         category = category,
         onCategoryChange = { category = it },
+        buyNowPrice = buyNowPrice,
+        onBuyNowPriceChange = { buyNowPrice = it },
         errorMessage = errorMessage,
         onSaveClick = {
             val parsedPrice = price.toDoubleOrNull()
             val parsedHours = durationHours.toLongOrNull()
+            val parsedBuyNow = if (buyNowPrice.isBlank()) 0.0 else buyNowPrice.toDoubleOrNull()
 
             when {
                 title.isBlank() -> errorMessage = "Title is required"
                 description.isBlank() -> errorMessage = "Description is required"
                 parsedPrice == null || parsedPrice <= 0 -> errorMessage = "Enter a valid price"
                 parsedHours == null || parsedHours <= 0 -> errorMessage = "Enter a valid duration"
+                parsedBuyNow == null || parsedBuyNow < 0 -> errorMessage = "Buy Now price must be a positive number (or leave blank)"
+                parsedBuyNow > 0 && parsedBuyNow <= parsedPrice -> errorMessage = "Buy Now price must be higher than the starting price"
                 else -> {
                     errorMessage = null
                     val endTime = System.currentTimeMillis() + parsedHours * 60_000L
@@ -64,7 +70,8 @@ fun CreateListingRoute(
                                 startingPrice = parsedPrice,
                                 endTime = endTime,
                                 sellerId = currentUserId.toInt(),
-                                category = category
+                                category = category,
+                                buyNowPrice = parsedBuyNow ?: 0.0
                             )
                         )
                         onSaved()
