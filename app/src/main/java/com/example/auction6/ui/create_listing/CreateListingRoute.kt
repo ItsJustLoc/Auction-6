@@ -1,5 +1,9 @@
 package com.example.auction6.ui.create_listing
 
+import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +16,7 @@ import com.example.auction6.data.local.DatabaseProvider
 import com.example.auction6.data.local.LISTING_CATEGORIES
 import com.example.auction6.data.local.ListingEntity
 import kotlinx.coroutines.launch
+import java.io.File
 
 // State owner for Create Listing
 @Composable
@@ -29,9 +34,17 @@ fun CreateListingRoute(
     var description by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var durationHours by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf(LISTING_CATEGORIES.last()) } // defaults to "Other"
+    var category by remember { mutableStateOf(LISTING_CATEGORIES.last()) }
     var buyNowPrice by remember { mutableStateOf("") }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // Standard Android system image picker — no permission required
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        selectedImageUri = uri
+    }
 
     CreateListingScreen(
         title = title,
@@ -46,6 +59,8 @@ fun CreateListingRoute(
         onCategoryChange = { category = it },
         buyNowPrice = buyNowPrice,
         onBuyNowPriceChange = { buyNowPrice = it },
+        selectedImageUri = selectedImageUri,
+        onPickImageClick = { imagePicker.launch("image/*") },
         errorMessage = errorMessage,
         onSaveClick = {
             val parsedPrice = price.toDoubleOrNull()
@@ -63,6 +78,10 @@ fun CreateListingRoute(
                     errorMessage = null
                     val endTime = System.currentTimeMillis() + parsedHours * 60_000L
                     scope.launch {
+                        // Copy image to internal storage so it persists independently of the source URI
+                        val imagePath = selectedImageUri
+                            ?.let { copyImageToInternalStorage(context, it) }
+                            ?: ""
                         listingDao.insertListing(
                             ListingEntity(
                                 title = title.trim(),
@@ -71,7 +90,8 @@ fun CreateListingRoute(
                                 endTime = endTime,
                                 sellerId = currentUserId.toInt(),
                                 category = category,
-                                buyNowPrice = parsedBuyNow ?: 0.0
+                                buyNowPrice = parsedBuyNow ?: 0.0,
+                                imagePath = imagePath
                             )
                         )
                         onSaved()
@@ -82,4 +102,14 @@ fun CreateListingRoute(
         onCancelClick = onCancel,
         modifier = modifier
     )
+}
+
+/** Copies a content URI into the app's private listing_images directory and returns the file path. */
+private fun copyImageToInternalStorage(context: Context, sourceUri: Uri): String {
+    val dir = File(context.filesDir, "listing_images").also { it.mkdirs() }
+    val dest = File(dir, "${System.currentTimeMillis()}.jpg")
+    context.contentResolver.openInputStream(sourceUri)?.use { input ->
+        dest.outputStream().use { input.copyTo(it) }
+    }
+    return dest.absolutePath
 }

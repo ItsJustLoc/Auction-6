@@ -1,26 +1,37 @@
 package com.example.auction6.ui.create_listing
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.auction6.data.local.LISTING_CATEGORIES
 
 // Stateless UI for Create Listing form
@@ -38,15 +49,19 @@ fun CreateListingScreen(
     onCategoryChange: (String) -> Unit,
     buyNowPrice: String,
     onBuyNowPriceChange: (String) -> Unit,
+    selectedImageUri: Uri?,
+    onPickImageClick: () -> Unit,
     errorMessage: String?,
     onSaveClick: () -> Unit,
     onCancelClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier
-        .statusBarsPadding()
-        .padding(16.dp))
-    {
+    Column(
+        modifier = modifier
+            .statusBarsPadding()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         Text("Create Listing", fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -100,7 +115,6 @@ fun CreateListingScreen(
 
         Text("Category", fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(4.dp))
-        // Exclude "All" — that's only for filtering, not for creating
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(LISTING_CATEGORIES.filter { it != "All" }) { cat ->
                 if (cat == category) {
@@ -111,9 +125,31 @@ fun CreateListingScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // ── Photo picker ──────────────────────────────────────────────────────
+        Text("Photo", fontWeight = FontWeight.SemiBold)
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            OutlinedButton(onClick = onPickImageClick) {
+                Text(if (selectedImageUri == null) "Pick Photo" else "Change Photo")
+            }
+            if (selectedImageUri != null) {
+                Spacer(modifier = Modifier.size(12.dp))
+                AsyncImage(
+                    model = selectedImageUri,
+                    contentDescription = "Selected photo preview",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(72.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
+        }
+
         if (errorMessage != null) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = errorMessage, color = androidx.compose.ui.graphics.Color.Red)
+            Text(text = errorMessage, color = Color.Red)
         }
 
         Spacer(modifier = Modifier.height(16.dp))

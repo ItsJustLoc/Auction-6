@@ -12,5 +12,6 @@ data class ListingEntity(
     val endTime: Long,       // stored as epoch milliseconds
     val sellerId: Int,       // references users.id
     val category: String = "Other",
-    val buyNowPrice: Double = 0.0   // 0.0 means no Buy Now option
+    val buyNowPrice: Double = 0.0,  // 0.0 means no Buy Now option
+    val imagePath: String = ""      // absolute path to image in internal storage; "" = no image
 )
