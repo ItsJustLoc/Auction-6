@@ -69,10 +69,10 @@ fun CategoryChipGroup(
             FilterChip(
                 selected = cat == selected,
                 onClick = { onSelect(cat) },
-                label = { Text(cat, style = MaterialTheme.typography.labelSmall) },
+                label = { Text(cat, fontSize = 13.sp, fontWeight = FontWeight.Medium) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = RetroInk,
-                    selectedLabelColor = RetroCream,
+                    selectedContainerColor = RetroAmber,
+                    selectedLabelColor = RetroInk,
                     containerColor = RetroCard,
                     labelColor = RetroMuted
                 ),
@@ -80,7 +80,7 @@ fun CategoryChipGroup(
                     enabled = true,
                     selected = cat == selected,
                     borderColor = RetroBorder,
-                    selectedBorderColor = RetroInk
+                    selectedBorderColor = RetroAmber
                 ),
                 shape = RoundedCornerShape(20.dp)
             )
@@ -141,7 +141,7 @@ fun ListingCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = RetroCard),
-        border = BorderStroke(1.dp, RetroBorder)
+        border = BorderStroke(2.dp, RetroBorder)
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
             if (listing.imagePath.isNotBlank()) {
@@ -193,12 +193,14 @@ fun ListingCard(
 
                 Text(
                     listing.category,
-                    style = MaterialTheme.typography.labelSmall.copy(color = RetroBlue)
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = RetroBlue
                 )
 
                 Spacer(Modifier.height(4.dp))
 
-                Row(verticalAlignment = Alignment.Bottom) {
+                Column {
                     Text(
                         "$${listing.startingPrice}",
                         style = MaterialTheme.typography.headlineMedium.copy(
@@ -207,8 +209,9 @@ fun ListingCard(
                         )
                     )
                     Text(
-                        "  starting bid",
-                        style = MaterialTheme.typography.bodyMedium.copy(color = RetroMuted)
+                        "starting bid",
+                        fontSize = 12.sp,
+                        color = RetroMuted
                     )
                 }
 

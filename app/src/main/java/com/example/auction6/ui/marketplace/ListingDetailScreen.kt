@@ -77,8 +77,14 @@ fun ListingDetailScreen(
             if (listing == null) {
                 Text("Loading...")
             } else {
-                Text(listing.title, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    listing.title,
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFF1A1612),
+                    letterSpacing = (-0.5).sp
+                )
+                Spacer(modifier = Modifier.height(6.dp))
 
                 // Listing photo (if one was uploaded)
                 if (listing.imagePath.isNotBlank()) {
@@ -94,13 +100,23 @@ fun ListingDetailScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                Text(listing.description)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Starting Price: $${listing.startingPrice}", fontWeight = FontWeight.SemiBold)
+                Text(
+                    listing.description,
+                    fontSize = 15.sp,
+                    color = Color(0xFF6B6560),
+                    lineHeight = 22.sp
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text("Starting Price: $${listing.startingPrice}", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(4.dp))
                 val endDate = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
                     .format(Date(listing.endTime))
-                Text("Ends: $endDate")
+                Text(
+                    "Ends: $endDate",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFFB87333)
+                )
 
                 // Buy Now price badge (only when active)
                 if (!auctionEnded && listing.buyNowPrice > 0.0) {
@@ -161,27 +177,26 @@ fun ListingDetailScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
-                                Text("Order Details", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                Text("Order Details", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                                 Spacer(modifier = Modifier.height(6.dp))
-                                Text("Order #${order.id}")
-                                Text("Type: ${if (order.orderType == OrderEntity.ORDER_TYPE_BUY_NOW) "Buy Now" else "Auction"}")
-                                Text("Buyer: ${if (isBuyer) "You" else "User #${order.buyerId}"}")
-                                Text("Seller: ${if (isSeller) "You" else "User #${order.sellerId}"}")
-                                Text("Final Price: $${"%.2f".format(order.finalPrice)}")
+                                Text("Buyer: ${if (isBuyer) "You" else "—"}", fontSize = 14.sp)
+                                Text("Final Price: $${"%.2f".format(order.finalPrice)}", fontSize = 14.sp)
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "Payment: ${order.paymentStatus}",
+                                    fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = paymentColor(order.paymentStatus)
                                 )
                                 Text(
                                     text = "Shipping: ${shippingLabel(order.shippingStatus)}",
+                                    fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = shippingColor(order.shippingStatus)
                                 )
                                 if (order.shippingAddress.isNotBlank()) {
                                     Spacer(modifier = Modifier.height(4.dp))
-                                    Text("Ship to: ${order.shippingAddress}", color = Color.Gray)
+                                    Text("Ship to: ${order.shippingAddress}", fontSize = 14.sp, color = Color.Gray)
                                 }
                             }
                         }

@@ -2,6 +2,8 @@ package com.example.auction6.ui.history
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -41,6 +43,7 @@ import com.example.auction6.ui.theme.RetroInk
 import com.example.auction6.ui.theme.RetroRed
 import com.example.auction6.ui.theme.RetroOrange
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BuyerHistoryScreen(
     items: List<Pair<OrderEntity, String>>,
@@ -105,7 +108,10 @@ fun BuyerHistoryScreen(
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
                                 StatusTag(
                                     label = "Payment: ${order.paymentStatus}",
                                     color = paymentTagColor(order.paymentStatus)
