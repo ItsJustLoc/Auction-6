@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.auction6.ui.bid.PlaceBidRoute
+import com.example.auction6.ui.buy_now.BuyNowRoute
 import com.example.auction6.ui.create_listing.CreateListingRoute
 import com.example.auction6.ui.history.BuyerHistoryRoute
 import com.example.auction6.ui.history.SellerHistoryRoute
@@ -78,7 +79,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                     }
                 },
                 onVerifyBack = {
-                    navController.popBackStack()  // <-- add this
+                    navController.popBackStack()
                 }
             )
         }
@@ -132,6 +133,9 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                 onBack = { navController.popBackStack() },
                 onPlaceBidClick = {
                     navController.navigate(Route.PlaceBid.createRoute(listingId))
+                },
+                onBuyNowClick = {
+                    navController.navigate(Route.BuyNow.createRoute(listingId))
                 }
             )
         }
@@ -156,6 +160,21 @@ fun AppNavHost(modifier: Modifier = Modifier) {
         ) { backStackEntry ->
             val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
             PlaceBidRoute(
+                listingId = listingId,
+                currentUserId = currentUserId,
+                onBack = {
+                    listingDetailRefresh++
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            route = Route.BuyNow.route,
+            arguments = listOf(navArgument("listingId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
+            BuyNowRoute(
                 listingId = listingId,
                 currentUserId = currentUserId,
                 onBack = {

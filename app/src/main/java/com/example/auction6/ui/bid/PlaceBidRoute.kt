@@ -68,18 +68,34 @@ fun PlaceBidRoute(
                 }
                 else -> {
                     scope.launch {
-                        db.bidDao().insertBid(
-                            BidEntity(
-                                listingId = listingId,
-                                bidderId = currentUserId.toInt(),
-                                amount = bidNumber,
-                                timestamp = System.currentTimeMillis()
-                            )
-                        )
-                        currentHighestBid = bidNumber
-                        bidInput = ""
-                        isSuccess = true
-                        resultMessage = "Bid of $${"%.2f".format(bidNumber)} placed successfully!"
+                        // Re-check listing state at write time — it may have closed via
+                        // Buy Now or auction expiry while the user was on this screen
+                        val fresh = db.listingDao().getListingById(listingId)
+                        val auctionAlreadyClosed = fresh == null ||
+                            fresh.endTime < System.currentTimeMillis()
+                        val orderAlreadyExists = db.orderDao()
+                            .getOrderByListingId(listingId) != null
+
+                        when {
+                            auctionAlreadyClosed || orderAlreadyExists -> {
+                                isSuccess = false
+                                resultMessage = "This auction is no longer active — bids cannot be placed."
+                            }
+                            else -> {
+                                db.bidDao().insertBid(
+                                    BidEntity(
+                                        listingId = listingId,
+                                        bidderId = currentUserId.toInt(),
+                                        amount = bidNumber,
+                                        timestamp = System.currentTimeMillis()
+                                    )
+                                )
+                                currentHighestBid = bidNumber
+                                bidInput = ""
+                                isSuccess = true
+                                resultMessage = "Bid of $${"%.2f".format(bidNumber)} placed successfully!"
+                            }
+                        }
                     }
                 }
             }

@@ -20,4 +20,7 @@ interface ListingDao {
 
     @Query("DELETE FROM listings WHERE id = :listingId")
     suspend fun deleteListingById(listingId: Int)
+
+    @Query("UPDATE listings SET endTime = :newEndTime WHERE id = :listingId")
+    suspend fun updateEndTime(listingId: Int, newEndTime: Long)
 }
