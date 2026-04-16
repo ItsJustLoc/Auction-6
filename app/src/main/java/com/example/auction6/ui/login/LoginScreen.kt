@@ -29,7 +29,9 @@ import com.example.auction6.ui.theme.RetroInk
 import com.example.auction6.ui.theme.RetroMuted
 import com.example.auction6.ui.theme.RetroOrange
 import com.example.auction6.ui.theme.RetroCream
-
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontStyle
 @Composable
 fun LoginScreen(
     state: LoginUiState,
@@ -57,11 +59,16 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Buy & sell car parts fast",
-            style = MaterialTheme.typography.bodyMedium,
+            text = "Where the garage meets the marketplace",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontStyle = FontStyle.Italic,
+                letterSpacing = 1.sp
+            ),
             color = RetroMuted,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 24.dp)
         )
+
 
         Spacer(modifier = Modifier.height(24.dp))
 

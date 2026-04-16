@@ -179,7 +179,7 @@ fun ListingDetailScreen(
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text("Order Details", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                                 Spacer(modifier = Modifier.height(6.dp))
-                                Text("Buyer: ${if (isBuyer) "You" else "—"}", fontSize = 14.sp)
+                                if (isBuyer) Text("Buyer: You", fontSize = 14.sp)
                                 Text("Final Price: $${"%.2f".format(order.finalPrice)}", fontSize = 14.sp)
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(

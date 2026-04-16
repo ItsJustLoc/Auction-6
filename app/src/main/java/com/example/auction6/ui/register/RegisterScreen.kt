@@ -1,16 +1,35 @@
 package com.example.auction6.ui.register
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.auction6.ui.components.AuctionTextField
+import com.example.auction6.ui.theme.RetroBlue
+import com.example.auction6.ui.theme.RetroCream
+import com.example.auction6.ui.theme.RetroInk
+import com.example.auction6.ui.theme.RetroMuted
+import com.example.auction6.ui.theme.RetroOrange
 
 @Composable
 fun RegisterScreen(
@@ -25,42 +44,87 @@ fun RegisterScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        TextField(
+        Text(
+            text = "AUCTION6",
+            style = MaterialTheme.typography.displayLarge,
+            color = RetroInk,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Where the garage meets the marketplace",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontStyle = FontStyle.Italic,
+                letterSpacing = 1.sp
+            ),
+            color = RetroMuted,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 24.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        AuctionTextField(
             value = state.email,
             onValueChange = onEmailChange,
-            label = { Text("Enter Email") }
+            label = "Email"
         )
 
-        TextField(
+        Spacer(modifier = Modifier.height(8.dp))
+
+        AuctionTextField(
             value = state.password,
             onValueChange = onPasswordChange,
-            label = { Text("Enter Password") }
+            label = "Password",
+            visualTransformation = PasswordVisualTransformation()
         )
 
-        TextField(
+        Spacer(modifier = Modifier.height(8.dp))
+
+        AuctionTextField(
             value = state.confirmPassword,
             onValueChange = onConfirmPasswordChange,
-            label = { Text("Confirm Password") }
+            label = "Confirm Password",
+            visualTransformation = PasswordVisualTransformation()
         )
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = onRegisterClick,
-            enabled = state.isRegisterEnabled
+            enabled = state.isRegisterEnabled,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = RetroOrange,
+                contentColor = RetroCream
+            )
         ) {
-            Text("Register")
-        }
-        Button(
-            onClick = onBackToLoginClick,
-        ) {
-            Text("Back to Login")
+            Text("CREATE ACCOUNT", fontWeight = FontWeight.Bold)
         }
 
-        state.errorMessage?.let { message ->
-            Text(text = message)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedButton(
+            onClick = onBackToLoginClick,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            border = BorderStroke(1.dp, RetroBlue),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = RetroBlue)
+        ) {
+            Text("BACK TO LOGIN")
+        }
+
+        state.errorMessage?.let {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(it, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
         }
     }
 }
