@@ -1,40 +1,49 @@
 package com.example.auction6.ui.create_listing
 
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.auction6.data.local.LISTING_CATEGORIES
+import com.example.auction6.ui.components.AuctionTextField
+import com.example.auction6.ui.components.CategoryChipGroup
+import com.example.auction6.ui.theme.RetroBorder
+import com.example.auction6.ui.theme.RetroCream
+import com.example.auction6.ui.theme.RetroInk
+import com.example.auction6.ui.theme.RetroMuted
+import com.example.auction6.ui.theme.RetroOrange
 
-// Stateless UI for Create Listing form
 @Composable
 fun CreateListingScreen(
     title: String,
@@ -59,111 +68,144 @@ fun CreateListingScreen(
     Column(
         modifier = modifier
             .statusBarsPadding()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text("Create Listing", fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
+        Text(
+            "Create Listing",
+            style = MaterialTheme.typography.headlineMedium,
+            color = RetroInk,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        AuctionTextField(
             value = title,
             onValueChange = onTitleChange,
-            label = { Text("Title") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            label = "Title"
         )
+
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
+        AuctionTextField(
             value = description,
             onValueChange = onDescriptionChange,
-            label = { Text("Description") },
-            minLines = 3,
-            modifier = Modifier.fillMaxWidth()
+            label = "Description",
+            singleLine = false,
+            minLines = 3
         )
+
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
+        AuctionTextField(
             value = price,
             onValueChange = onPriceChange,
-            label = { Text("Starting Price ($)") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            modifier = Modifier.fillMaxWidth()
+            label = "Starting Price ($)",
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
         )
+
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
+        AuctionTextField(
             value = buyNowPrice,
             onValueChange = onBuyNowPriceChange,
-            label = { Text("Buy Now Price ($) — optional") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            modifier = Modifier.fillMaxWidth()
+            label = "Buy Now Price ($) — optional",
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
         )
+
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
+        AuctionTextField(
             value = durationHours,
             onValueChange = onDurationChange,
-            label = { Text("Duration (minutes)") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+            label = "Duration (minutes)",
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text("Category", fontWeight = FontWeight.SemiBold)
-        Spacer(modifier = Modifier.height(4.dp))
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(LISTING_CATEGORIES.filter { it != "All" }) { cat ->
-                if (cat == category) {
-                    Button(onClick = { onCategoryChange(cat) }) { Text(cat) }
-                } else {
-                    OutlinedButton(onClick = { onCategoryChange(cat) }) { Text(cat) }
-                }
-            }
-        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // ── Photo picker ──────────────────────────────────────────────────────
-        Text("Photo", fontWeight = FontWeight.SemiBold)
-        Spacer(modifier = Modifier.height(4.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedButton(onClick = onPickImageClick) {
-                Text(if (selectedImageUri == null) "Pick Photo" else "Change Photo")
-            }
-            if (selectedImageUri != null) {
-                Spacer(modifier = Modifier.size(12.dp))
-                AsyncImage(
-                    model = selectedImageUri,
-                    contentDescription = "Selected photo preview",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(72.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                )
+        Text("Category", style = MaterialTheme.typography.titleMedium, color = RetroInk)
+
+        CategoryChipGroup(
+            categories = LISTING_CATEGORIES.filter { it != "All" },
+            selected = category,
+            onSelect = onCategoryChange,
+            modifier = Modifier.padding(horizontal = 0.dp)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text("Photo", style = MaterialTheme.typography.titleMedium, color = RetroInk)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (selectedImageUri != null) {
+            AsyncImage(
+                model = selectedImageUri,
+                contentDescription = "Selected photo preview",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(160.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(onClick = onPickImageClick)
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(160.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(androidx.compose.ui.graphics.Color.Transparent)
+                    .border(BorderStroke(1.5.dp, RetroBorder), RoundedCornerShape(8.dp))
+                    .clickable(onClick = onPickImageClick),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        Icons.Outlined.CameraAlt,
+                        contentDescription = "Add Photo",
+                        tint = RetroMuted,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text("Add Photo", style = MaterialTheme.typography.bodyMedium, color = RetroMuted)
+                }
             }
         }
 
         if (errorMessage != null) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = errorMessage, color = Color.Red)
+            Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
+        Button(
+            onClick = onSaveClick,
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            shape = RoundedCornerShape(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = RetroOrange,
+                contentColor = RetroCream
+            )
         ) {
-            OutlinedButton(onClick = onCancelClick, modifier = Modifier.weight(1f)) {
-                Text("Cancel")
-            }
-            Button(onClick = onSaveClick, modifier = Modifier.weight(1f)) {
-                Text("Save Listing")
-            }
+            Text("Save Listing", fontWeight = FontWeight.Bold)
         }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        TextButton(
+            onClick = onCancelClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Cancel", color = RetroMuted)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }

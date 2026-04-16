@@ -1,8 +1,10 @@
 package com.example.auction6.ui.history
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,22 +13,36 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Sell
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.auction6.data.local.OrderEntity
+import com.example.auction6.ui.components.EmptyState
+import com.example.auction6.ui.components.StatusTag
+import com.example.auction6.ui.theme.RetroBorder
+import com.example.auction6.ui.theme.RetroBlue
+import com.example.auction6.ui.theme.RetroCard
+import com.example.auction6.ui.theme.RetroCream
+import com.example.auction6.ui.theme.RetroGreen
+import com.example.auction6.ui.theme.RetroInk
+import com.example.auction6.ui.theme.RetroAmber
+import com.example.auction6.ui.theme.RetroRed
+import com.example.auction6.ui.theme.RetroOrange
 
-// Stateless UI for Seller History
 @Composable
 fun SellerHistoryScreen(
-    items: List<Pair<OrderEntity, String>>, // order + listing title
+    items: List<Pair<OrderEntity, String>>,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -42,45 +58,64 @@ fun SellerHistoryScreen(
         ) {
             Button(
                 onClick = onBack,
-                modifier = Modifier.align(Alignment.CenterStart)
+                modifier = Modifier.align(Alignment.CenterStart),
+                colors = ButtonDefaults.buttonColors(containerColor = RetroOrange, contentColor = RetroCream)
             ) { Text("Back") }
 
             Text(
                 text = "My Sales",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineMedium,
+                color = RetroInk,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
 
         if (items.isEmpty()) {
-            Text(
-                text = "No sales yet.",
-                modifier = Modifier.padding(16.dp),
-                color = Color.Gray
+            EmptyState(
+                icon = Icons.Outlined.Sell,
+                title = "No sales yet",
+                subtitle = "List a car part and win your first sale"
             )
         } else {
-            LazyColumn(contentPadding = PaddingValues(16.dp)) {
+            LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
                 items(items) { (order, title) ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 8.dp)
+                            .padding(bottom = 8.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = CardDefaults.cardColors(containerColor = RetroCard),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, RetroBorder)
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(title, fontWeight = FontWeight.SemiBold)
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                title,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = RetroInk
+                            )
+
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Sold for: $${"%.2f".format(order.finalPrice)}")
+
                             Text(
-                                text = "Payment: ${order.paymentStatus}",
-                                color = paymentColor(order.paymentStatus)
+                                "Sold for: $${"%.2f".format(order.finalPrice)}",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = RetroInk
                             )
-                            Text(
-                                text = "Shipping: ${shippingLabel(order.shippingStatus)}",
-                                color = shippingColor(order.shippingStatus)
-                            )
-                            if (order.orderType == OrderEntity.ORDER_TYPE_BUY_NOW) {
-                                Text("via Buy Now", color = Color(0xFF1565C0))
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                StatusTag(
+                                    label = "Payment: ${order.paymentStatus}",
+                                    color = paymentTagColor(order.paymentStatus)
+                                )
+                                StatusTag(
+                                    label = "Ship: ${shippingLabel(order.shippingStatus)}",
+                                    color = shippingTagColor(order.shippingStatus)
+                                )
+                                if (order.orderType == OrderEntity.ORDER_TYPE_BUY_NOW) {
+                                    StatusTag(label = "Buy Now", color = RetroBlue)
+                                }
                             }
                         }
                     }
@@ -90,18 +125,18 @@ fun SellerHistoryScreen(
     }
 }
 
-private fun paymentColor(status: String) = when (status) {
-    OrderEntity.PAYMENT_AUTHORIZED -> Color(0xFF2E7D32)
+private fun paymentTagColor(status: String) = when (status) {
+    OrderEntity.PAYMENT_AUTHORIZED -> RetroGreen
     OrderEntity.PAYMENT_FAILED,
-    OrderEntity.PAYMENT_CANCELLED  -> Color(0xFFB71C1C)
-    else                           -> Color(0xFF6D4C41)
+    OrderEntity.PAYMENT_CANCELLED  -> RetroRed
+    else                           -> RetroAmber
 }
 
-private fun shippingColor(status: String) = when (status) {
-    OrderEntity.SHIP_DELIVERED  -> Color(0xFF2E7D32)
-    OrderEntity.SHIP_IN_TRANSIT -> Color(0xFF1565C0)
-    OrderEntity.SHIP_RETURNED   -> Color(0xFF6D4C41)
-    else                        -> Color.Gray
+private fun shippingTagColor(status: String) = when (status) {
+    OrderEntity.SHIP_DELIVERED  -> RetroGreen
+    OrderEntity.SHIP_RETURNED   -> RetroRed
+    OrderEntity.SHIP_IN_TRANSIT -> RetroBlue
+    else                        -> RetroAmber
 }
 
 private fun shippingLabel(status: String) = when (status) {

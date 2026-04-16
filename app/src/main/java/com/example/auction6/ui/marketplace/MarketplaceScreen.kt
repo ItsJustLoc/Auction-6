@@ -1,42 +1,51 @@
 package com.example.auction6.ui.marketplace
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Storefront
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.auction6.data.local.LISTING_CATEGORIES
 import com.example.auction6.data.local.ListingEntity
-import java.io.File
+import com.example.auction6.ui.components.CategoryChipGroup
+import com.example.auction6.ui.components.EmptyState
+import com.example.auction6.ui.components.ListingCard
+import com.example.auction6.ui.theme.RetroBorder
+import com.example.auction6.ui.theme.RetroBlue
+import com.example.auction6.ui.theme.RetroCream
+import com.example.auction6.ui.theme.RetroInk
+import com.example.auction6.ui.theme.RetroMuted
+import com.example.auction6.ui.theme.RetroOrange
 
-// Stateless UI for marketplace
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarketplaceScreen(
     listings: List<ListingEntity>,
@@ -50,128 +59,91 @@ fun MarketplaceScreen(
     onSellerHistoryClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.statusBarsPadding()) {
-        // Title row
-        Text(
-            text = "Marketplace",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, start = 16.dp, end = 16.dp)
-        )
-
-        // Button bar: logout left, + List Item centered
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Button(
-                onClick = onLogoutClick,
-                modifier = Modifier.align(Alignment.CenterStart)
-            ) { Text("Log out") }
-
-            Button(
+    Scaffold(
+        modifier = modifier.statusBarsPadding(),
+        containerColor = RetroCream,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "AUCTION6",
+                        style = MaterialTheme.typography.displayLarge,
+                        color = RetroInk,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                actions = {
+                    IconButton(onClick = onLogoutClick) {
+                        Icon(Icons.Default.Person, contentDescription = "Log out", tint = RetroMuted)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = RetroCream)
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
                 onClick = onCreateListingClick,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) { Text("+ List Item") }
-        }
-
-        // History row: Purchases left, Sales right
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-        ) {
-            OutlinedButton(
-                onClick = onBuyerHistoryClick,
-                modifier = Modifier.align(Alignment.CenterStart)
-            ) { Text("Purchases") }
-
-            OutlinedButton(
-                onClick = onSellerHistoryClick,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) { Text("Sales") }
-        }
-
-        // Category filter chips
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(LISTING_CATEGORIES) { cat ->
-                if (cat == selectedCategory) {
-                    Button(onClick = { onCategorySelected(cat) }) { Text(cat) }
-                } else {
-                    OutlinedButton(onClick = { onCategorySelected(cat) }) { Text(cat) }
-                }
+                containerColor = RetroOrange
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "List Item", tint = Color.White)
             }
         }
-
-        // Content area fills remaining vertical space to eliminate bottom whitespace
-        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            if (listings.isEmpty()) {
-                Text(
-                    text = "No listings yet.",
-                    modifier = Modifier.padding(16.dp)
-                )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentPadding = PaddingValues(bottom = 88.dp)
+        ) {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(listings) { listing ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp)
-                                .clickable { onListingClick(listing.id) }
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Thumbnail — only shown if the listing has a photo
-                                if (listing.imagePath.isNotBlank()) {
-                                    AsyncImage(
-                                        model = File(listing.imagePath),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .size(64.dp)
-                                            .clip(RoundedCornerShape(6.dp))
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                }
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(listing.title, fontWeight = FontWeight.SemiBold)
-                                        if (listing.sellerId == currentUserId.toInt()) {
-                                            Text(
-                                                text = "Your listing",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.tertiary
-                                            )
-                                        }
-                                    }
-                                    Text(
-                                        text = listing.category,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Text(
-                                        text = "Starting at $${listing.startingPrice}",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    OutlinedButton(
+                        onClick = onBuyerHistoryClick,
+                        modifier = Modifier.weight(1f),
+                        border = BorderStroke(1.dp, RetroBlue),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = RetroBlue)
+                    ) { Text("Purchases") }
+
+                    OutlinedButton(
+                        onClick = onSellerHistoryClick,
+                        modifier = Modifier.weight(1f),
+                        border = BorderStroke(1.dp, RetroBlue),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = RetroBlue)
+                    ) { Text("Sales") }
+                }
+            }
+
+            item {
+                CategoryChipGroup(
+                    categories = LISTING_CATEGORIES,
+                    selected = selectedCategory,
+                    onSelect = onCategorySelected
+                )
+            }
+
+            if (listings.isEmpty()) {
+                item {
+                    Spacer(Modifier.height(48.dp))
+                    EmptyState(
+                        icon = Icons.Outlined.Storefront,
+                        title = "No listings here",
+                        subtitle = "Be the first to list a car part — tap + to get started"
+                    )
+                }
+            } else {
+                items(listings, key = { it.id }) { listing ->
+                    ListingCard(
+                        listing = listing,
+                        isYours = listing.sellerId == currentUserId.toInt(),
+                        onClick = { onListingClick(listing.id) },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    )
                 }
             }
         }

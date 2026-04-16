@@ -1,19 +1,35 @@
-//Only display UI and emit events
 package com.example.auction6.ui.login
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.TextField
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.auction6.ui.components.AuctionTextField
+import com.example.auction6.ui.theme.RetroBorder
+import com.example.auction6.ui.theme.RetroBlue
+import com.example.auction6.ui.theme.RetroInk
+import com.example.auction6.ui.theme.RetroMuted
+import com.example.auction6.ui.theme.RetroOrange
+import com.example.auction6.ui.theme.RetroCream
 
-// Stateless
 @Composable
 fun LoginScreen(
     state: LoginUiState,
@@ -23,44 +39,77 @@ fun LoginScreen(
     onGoToRegisterClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Text(
+            text = "AUCTION6",
+            style = MaterialTheme.typography.displayLarge,
+            color = RetroInk,
+            textAlign = TextAlign.Center
+        )
 
-        // Email Text Field
-        TextField(
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Buy & sell car parts fast",
+            style = MaterialTheme.typography.bodyMedium,
+            color = RetroMuted,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        AuctionTextField(
             value = state.email,
-            onValueChange = {
-                    newEmail ->
-                onEmailChange(newEmail)
-            },
-            label = { Text("Enter Email") }
+            onValueChange = onEmailChange,
+            label = "Email"
         )
 
-        // Password Text Field
-        TextField(
+        Spacer(modifier = Modifier.height(8.dp))
+
+        AuctionTextField(
             value = state.password,
-            onValueChange = {
-                    newPassword ->
-                onPasswordChange(newPassword)
-            },
-            label = { Text("Enter Password") }
+            onValueChange = onPasswordChange,
+            label = "Password",
+            visualTransformation = PasswordVisualTransformation()
         )
 
-        // Login button (greyed out when email / password is blank)
-        Button(onClick = onLoginClick, enabled = state.isLoginEnabled) {
-            Text(text = "Login")
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onLoginClick,
+            enabled = state.isLoginEnabled,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = RetroOrange,
+                contentColor = RetroCream
+            )
+        ) {
+            Text("LOGIN", fontWeight = FontWeight.Bold)
         }
-        //Register button (greyed out when email / password is blank)
-        Button(onClick = onGoToRegisterClick) {
-            Text(text = "Create Account")
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedButton(
+            onClick = onGoToRegisterClick,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            border = BorderStroke(1.dp, RetroBlue),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = RetroBlue)
+        ) {
+            Text("CREATE ACCOUNT")
         }
-        // if Error exist display under "Login" button
-        state.errorMessage?.let { Text(it) }
+
+        state.errorMessage?.let {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(it, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
+        }
     }
 }
