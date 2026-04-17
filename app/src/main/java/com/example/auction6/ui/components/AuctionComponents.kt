@@ -35,12 +35,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import coil.compose.AsyncImage
 import com.example.auction6.data.local.ListingEntity
+import kotlinx.coroutines.delay
 import com.example.auction6.ui.theme.RetroBorder
 import com.example.auction6.ui.theme.RetroBlue
 import com.example.auction6.ui.theme.RetroAmber
@@ -127,10 +134,16 @@ fun ListingCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val timeRemainingMs = listing.endTime - System.currentTimeMillis()
+    var timeRemainingMs by remember { mutableStateOf(listing.endTime - System.currentTimeMillis()) }
+    LaunchedEffect(listing.endTime) {
+        while (timeRemainingMs > 0L) {
+            delay(1_000L)
+            timeRemainingMs = listing.endTime - System.currentTimeMillis()
+        }
+    }
     val timeLabel = when {
         timeRemainingMs <= 0 -> "Ended"
-        timeRemainingMs < 60_000L -> "${timeRemainingMs / 1_000}s left"
+        timeRemainingMs < 60_000L -> "${timeRemainingMs / 1_000}s"
         timeRemainingMs < 3_600_000L -> "${timeRemainingMs / 60_000}m left"
         else -> "${timeRemainingMs / 3_600_000}h left"
     }
@@ -143,28 +156,28 @@ fun ListingCard(
         colors = CardDefaults.cardColors(containerColor = RetroCard),
         border = BorderStroke(2.dp, RetroBorder)
     ) {
-        Row(modifier = Modifier.padding(16.dp)) {
+        Column {
             if (listing.imagePath.isNotBlank()) {
                 AsyncImage(
                     model = File(listing.imagePath),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .fillMaxWidth()
+                        .height(180.dp)
+                        .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
                 )
             } else {
                 Box(
                     modifier = Modifier
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
                         .background(RetroBorder)
                 )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.padding(12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         listing.title,
@@ -198,20 +211,28 @@ fun ListingCard(
                     color = RetroBlue
                 )
 
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(6.dp))
 
-                Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         "$${listing.startingPrice}",
                         style = MaterialTheme.typography.headlineMedium.copy(
                             color = RetroAmber,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily.Monospace
                         )
                     )
                     Text(
-                        "starting bid",
+                        " · starting bid",
                         fontSize = 12.sp,
                         color = RetroMuted
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        timeLabel,
+                        fontSize = 12.sp,
+                        color = RetroMuted,
+                        fontFamily = FontFamily.Monospace
                     )
                 }
 
@@ -221,11 +242,6 @@ fun ListingCard(
                         style = MaterialTheme.typography.labelSmall.copy(color = RetroGreen)
                     )
                 }
-
-                Text(
-                    "⏱ $timeLabel",
-                    style = MaterialTheme.typography.labelSmall.copy(color = RetroMuted)
-                )
             }
         }
     }

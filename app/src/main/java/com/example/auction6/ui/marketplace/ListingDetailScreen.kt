@@ -1,5 +1,9 @@
 package com.example.auction6.ui.marketplace
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,11 +27,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +43,14 @@ import coil.compose.AsyncImage
 import com.example.auction6.data.local.BidEntity
 import com.example.auction6.data.local.ListingEntity
 import com.example.auction6.data.local.OrderEntity
+import com.example.auction6.ui.theme.ElectricBlue
+import com.example.auction6.ui.theme.RaceRed
+import com.example.auction6.ui.theme.RetroAmber
+import com.example.auction6.ui.theme.RetroCard
+import com.example.auction6.ui.theme.RetroBorder
+import com.example.auction6.ui.theme.RetroInk
+import com.example.auction6.ui.theme.RetroMuted
+import com.example.auction6.ui.theme.RetroOrange
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -107,16 +124,33 @@ fun ListingDetailScreen(
                     lineHeight = 22.sp
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                Text("Starting Price: $${listing.startingPrice}", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(4.dp))
-                val endDate = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
+
+                // Spec strip
+                val specEndDate = SimpleDateFormat("MMM dd HH:mm", Locale.getDefault())
                     .format(Date(listing.endTime))
-                Text(
-                    "Ends: $endDate",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFFB87333)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(RetroCard)
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceEvenly
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("START", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = RetroMuted, letterSpacing = 1.sp)
+                        Text("$${listing.startingPrice}", fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = RetroInk)
+                    }
+                    Box(modifier = Modifier.size(width = 1.dp, height = 36.dp).background(RetroBorder))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("BIDS", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = RetroMuted, letterSpacing = 1.sp)
+                        Text("${bidHistory.size}", fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = RetroInk)
+                    }
+                    Box(modifier = Modifier.size(width = 1.dp, height = 36.dp).background(RetroBorder))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("ENDS", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = RetroMuted, letterSpacing = 1.sp)
+                        Text(specEndDate, fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = RetroAmber)
+                    }
+                }
 
                 // Buy Now price badge (only when active)
                 if (!auctionEnded && listing.buyNowPrice > 0.0) {
@@ -124,7 +158,8 @@ fun ListingDetailScreen(
                     Text(
                         text = "Buy Now: $${"%.2f".format(listing.buyNowPrice)}",
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1565C0),
+                        fontFamily = FontFamily.Monospace,
+                        color = ElectricBlue,
                         fontSize = 16.sp
                     )
                 }
@@ -134,7 +169,8 @@ fun ListingDetailScreen(
                     Text(
                         text = "Highest Bid: $${"%.2f".format(highestBid?.amount)}",
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF1565C0)
+                        fontFamily = FontFamily.Monospace,
+                        color = RetroAmber
                     )
                 }
 
@@ -162,7 +198,8 @@ fun ListingDetailScreen(
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "Winning Bid: $${"%.2f".format(highestBid.amount)}",
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = FontFamily.Monospace
                                 )
                             }
                         }
@@ -180,7 +217,7 @@ fun ListingDetailScreen(
                                 Text("Order Details", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                                 Spacer(modifier = Modifier.height(6.dp))
                                 if (isBuyer) Text("Buyer: You", fontSize = 14.sp)
-                                Text("Final Price: $${"%.2f".format(order.finalPrice)}", fontSize = 14.sp)
+                                Text("Final Price: $${"%.2f".format(order.finalPrice)}", fontSize = 14.sp, fontFamily = FontFamily.Monospace)
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "Payment: ${order.paymentStatus}",
@@ -219,11 +256,10 @@ fun ListingDetailScreen(
                                         color = Color(0xFFB71C1C)
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
-                                    Button(
+                                    OutlinedButton(
                                         onClick = onRelistClick,
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color(0xFF1565C0)
-                                        )
+                                        border = androidx.compose.foundation.BorderStroke(1.dp, RaceRed),
+                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = RaceRed)
                                     ) { Text("Relist Item") }
                                 }
                             }
@@ -319,11 +355,10 @@ fun ListingDetailScreen(
                         )
                         if (isSeller) {
                             Spacer(modifier = Modifier.height(8.dp))
-                            Button(
+                            OutlinedButton(
                                 onClick = onRelistClick,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF1565C0)
-                                )
+                                border = androidx.compose.foundation.BorderStroke(1.dp, RaceRed),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = RaceRed)
                             ) { Text("Relist Item") }
                         }
                     }
@@ -353,14 +388,25 @@ fun ListingDetailScreen(
                     } else {
                         // Buyer: Place Bid + optional Buy Now side by side
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            Button(onClick = onPlaceBidClick) { Text("Place Bid") }
+                            val bidInteraction = remember { MutableInteractionSource() }
+                            val bidPressed by bidInteraction.collectIsPressedAsState()
+                            val bidScale by animateFloatAsState(if (bidPressed) 0.94f else 1f, label = "bid")
+                            Button(
+                                onClick = onPlaceBidClick,
+                                interactionSource = bidInteraction,
+                                modifier = Modifier.scale(bidScale),
+                                colors = ButtonDefaults.buttonColors(containerColor = RetroOrange)
+                            ) { Text("Place Bid") }
                             if (listing.buyNowPrice > 0.0) {
                                 Spacer(modifier = Modifier.width(12.dp))
+                                val buyInteraction = remember { MutableInteractionSource() }
+                                val buyPressed by buyInteraction.collectIsPressedAsState()
+                                val buyScale by animateFloatAsState(if (buyPressed) 0.94f else 1f, label = "buy")
                                 Button(
                                     onClick = onBuyNowClick,
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF1565C0)
-                                    )
+                                    interactionSource = buyInteraction,
+                                    modifier = Modifier.scale(buyScale),
+                                    colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
                                 ) { Text("Buy Now") }
                             }
                         }

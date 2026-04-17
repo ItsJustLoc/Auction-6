@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.auction6.data.local.ListingEntity
+import com.example.auction6.ui.theme.ElectricBlue
 
 // Stateless UI for Buy Now checkout
 @Composable
@@ -71,7 +72,7 @@ fun BuyNowScreen(
             text = "Buy Now Price: $${"%.2f".format(listing.buyNowPrice)}",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1565C0)
+            color = ElectricBlue
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -104,7 +105,8 @@ fun BuyNowScreen(
             Box(modifier = Modifier.fillMaxWidth()) {
                 Button(
                     onClick = onAuthorizePayment,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
                 ) { Text("Authorize Payment") }
             }
 
