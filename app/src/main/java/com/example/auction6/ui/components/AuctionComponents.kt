@@ -76,7 +76,7 @@ fun CategoryChipGroup(
             FilterChip(
                 selected = cat == selected,
                 onClick = { onSelect(cat) },
-                label = { Text(cat, fontSize = 13.sp, fontWeight = FontWeight.Medium) },
+                label = { Text(cat, fontSize = 15.sp, fontWeight = FontWeight.Medium) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = RetroAmber,
                     selectedLabelColor = RetroInk,
@@ -195,7 +195,7 @@ fun ListingCard(
                                 "YOUR LISTING",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     color = RetroAmber,
-                                    fontSize = 9.sp,
+                                    fontSize = 13.sp,
                                     letterSpacing = 1.sp
                                 ),
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -206,7 +206,7 @@ fun ListingCard(
 
                 Text(
                     listing.category,
-                    fontSize = 12.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     color = RetroBlue
                 )
@@ -223,14 +223,14 @@ fun ListingCard(
                         )
                     )
                     Text(
-                        " · starting bid",
-                        fontSize = 12.sp,
+                        " · Reserve Price",
+                        fontSize = 13.sp,
                         color = RetroMuted
                     )
                     Spacer(Modifier.weight(1f))
                     Text(
                         timeLabel,
-                        fontSize = 12.sp,
+                        fontSize = 13.sp,
                         color = RetroMuted,
                         fontFamily = FontFamily.Monospace
                     )

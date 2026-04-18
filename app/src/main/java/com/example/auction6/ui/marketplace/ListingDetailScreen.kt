@@ -119,7 +119,7 @@ fun ListingDetailScreen(
 
                 Text(
                     listing.description,
-                    fontSize = 15.sp,
+                    fontSize = 18.sp,
                     color = Color(0xFF6B6560),
                     lineHeight = 22.sp
                 )
@@ -133,28 +133,29 @@ fun ListingDetailScreen(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
                         .background(RetroCard)
-                        .padding(vertical = 12.dp),
+                        .padding(vertical = 14.dp),
                     horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceEvenly
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("START", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = RetroMuted, letterSpacing = 1.sp)
-                        Text("$${listing.startingPrice}", fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = RetroInk)
+                        Text("START", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = RetroMuted, letterSpacing = 1.sp)
+                        Text("$${listing.startingPrice}", fontSize = 15.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = RetroInk)
                     }
                     Box(modifier = Modifier.size(width = 1.dp, height = 36.dp).background(RetroBorder))
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("BIDS", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = RetroMuted, letterSpacing = 1.sp)
-                        Text("${bidHistory.size}", fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = RetroInk)
+                        Text("BIDS", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = RetroMuted, letterSpacing = 1.sp)
+                        Text("${bidHistory.size}", fontSize = 15.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = RetroInk)
                     }
                     Box(modifier = Modifier.size(width = 1.dp, height = 36.dp).background(RetroBorder))
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("ENDS", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = RetroMuted, letterSpacing = 1.sp)
-                        Text(specEndDate, fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = RetroAmber)
+                        Text("ENDS", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = RetroMuted, letterSpacing = 1.sp)
+                        Text(specEndDate, fontSize = 15.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = RetroAmber)
                     }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Buy Now price badge (only when active)
                 if (!auctionEnded && listing.buyNowPrice > 0.0) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         text = "Buy Now: $${"%.2f".format(listing.buyNowPrice)}",
                         fontWeight = FontWeight.Bold,
@@ -165,7 +166,7 @@ fun ListingDetailScreen(
                 }
 
                 if (bidHistory.isNotEmpty() && !auctionEnded) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = "Highest Bid: $${"%.2f".format(highestBid?.amount)}",
                         fontWeight = FontWeight.SemiBold,
@@ -221,19 +222,19 @@ fun ListingDetailScreen(
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "Payment: ${order.paymentStatus}",
-                                    fontSize = 14.sp,
+                                    fontSize = 15.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = paymentColor(order.paymentStatus)
                                 )
                                 Text(
                                     text = "Shipping: ${shippingLabel(order.shippingStatus)}",
-                                    fontSize = 14.sp,
+                                    fontSize = 15.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = shippingColor(order.shippingStatus)
                                 )
                                 if (order.shippingAddress.isNotBlank()) {
                                     Spacer(modifier = Modifier.height(4.dp))
-                                    Text("Ship to: ${order.shippingAddress}", fontSize = 14.sp, color = Color.Gray)
+                                    Text("Ship to: ${order.shippingAddress}", fontSize = 15.sp, color = Color.Gray)
                                 }
                             }
                         }

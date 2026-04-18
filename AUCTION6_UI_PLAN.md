@@ -13,19 +13,14 @@
 ### Color Palette (Jetpack Compose Material 3 tokens)
 ```kotlin
 // ui/theme/Color.kt
-val RetroOrange     = Color(0xFFE8622A)   // Primary CTA — bid button, Save Listing
+val RetroOrange     = Color(0xFFE8622A)   // Primary CTA — BID button (speed, energy)
+val RaceRed         = Color(0xFFD62828)   // Secondary CTA — urgent actions, reserve not met
+val ElectricBlue    = Color(0xFF1E6FD9)   // BUY NOW button, links, active nav
 val RetroCream      = Color(0xFFF5F0E8)   // Background primary (warm off-white)
 val RetroCard       = Color(0xFFEDEAE2)   // Card surface
 val RetroInk        = Color(0xFF1A1612)   // Primary text
 val RetroMuted      = Color(0xFF6B6560)   // Secondary text (category, subtitles)
-val RetroGreen      = Color(0xFF2D7A4F)   // Payment AUTHORIZED, Delivered status
-val RetroAmber      = Color(0xFFB87333)   // Auction timer, bid price
-val RetroRed        = Color(0xFFC0392B)   // Returned status, errors
-val RetroBorder     = Color(0xFFD4CFC6)   // Card borders, dividers
-val RetroBlue       = Color(0xFF2C5F8A)   // Links, "via Buy Now", navigation buttons
-val SurfaceDark     = Color(0xFF1C1915)   // Dark mode background
-val CardDark        = Color(0xFF262320)   // Dark mode card
-```
+val RetroGreen      = Color(0xFF2D7A4F)   // Payment AUTHORIZED,
 
 ### Typography (Jetpack Compose)
 ```kotlin
@@ -346,3 +341,236 @@ No gradients, no glassmorphism, no generic Material You purple.
 ```
 
 This ensures Claude Code never defaults to generic Material 3 teal/purple styling.
+
+---
+
+## 7. Card Layout Upgrade — Marketplace ListingCard
+
+The current card has image left + text right. Upgrade to a more structured layout:
+
+```
+┌─────────────────────────────────────┐
+│  [Full width image, 160dp tall]     │
+├─────────────────────────────────────┤
+│  Title (bold, RetroInk)             │
+│  Category (RetroBlue, labelSmall)   │
+│                                     │
+│  ┌──────────────────────────────┐   │
+│  │ $120.00  starting bid  ⏱ 2h │   │  ← single info chip/row
+│  └──────────────────────────────┘   │
+└─────────────────────────────────────┘
+```
+
+**Rules:**
+- Image fills full card width, 160dp height, no side padding, top corners rounded (10.dp), bottom corners 0
+- Title below image, 16dp horizontal padding, bold, RetroInk
+- Category directly under title, RetroBlue, labelSmall
+- Bottom info row: price (RetroAmber, bold) + "starting bid" label (RetroMuted) + timer (RetroMuted, right-aligned) — all on one Row, 16dp padding
+- If auction ended: replace timer with a `StatusTag("Ended", RetroMuted)`
+- If Buy Now available: add a second small row below with `StatusTag("Buy Now $X", RetroGreen)`
+- "YOUR LISTING" badge: top-right corner of the image, overlaid using `Box` with `Alignment.TopEnd`, RetroAmber background
+
+```kotlin
+@Composable
+fun ListingCard(listing: Listing, isYours: Boolean, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = RetroCard),
+        border = BorderStroke(1.dp, RetroBorder)
+    ) {
+        Column {
+            // Image with badge overlay
+            Box {
+                AsyncImage(
+                    model = listing.imageUrl,
+                    contentDescription = listing.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp)
+                        .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
+                )
+                if (isYours) {
+                    Surface(
+                        modifier = Modifier.align(Alignment.TopEnd).padding(8.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        color = RetroAmber
+                    ) {
+                        Text("YOUR LISTING",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = Color.White, fontSize = 9.sp, letterSpacing = 1.sp
+                            ),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp))
+                    }
+                }
+            }
+
+            // Text content
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                Text(listing.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = RetroInk)
+                Text(listing.category,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = ElectricBlue)
+
+                Spacer(Modifier.height(8.dp))
+
+                // Price + status row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("$${listing.startingPrice}",
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            color = RetroAmber, fontWeight = FontWeight.Bold))
+                    Spacer(Modifier.width(6.dp))
+                    Text("starting bid",
+                        style = MaterialTheme.typography.bodySmall.copy(color = RetroMuted),
+                        modifier = Modifier.weight(1f))
+                    // Timer or Ended status
+                    if (listing.isActive) {
+                        Text("⏱ ${listing.timeRemaining}",
+                            style = MaterialTheme.typography.labelSmall.copy(color = RetroMuted))
+                    } else {
+                        StatusTag("Ended", RetroMuted)
+                    }
+                }
+
+                // Buy Now row (optional)
+                listing.buyNowPrice?.let {
+                    Spacer(Modifier.height(4.dp))
+                    StatusTag("Buy Now  $$it", RetroGreen)
+                }
+            }
+        }
+    }
+}
+```
+
+---
+
+## 8. Action-Oriented CTA Color Rules
+
+CTA buttons must communicate speed and energy through color. Three distinct roles:
+
+| Action | Color | Meaning |
+|--------|-------|---------|
+| **BID** | `RetroOrange` #E8622A | Primary — warm urgency, speed |
+| **BUY NOW** | `ElectricBlue` #1E6FD9 | Instant action — electric, decisive |
+| **RELIST / DANGER** | `RaceRed` #D62828 | High stakes, irreversible |
+
+Add to `Color.kt`:
+```kotlin
+val RaceRed      = Color(0xFFD62828)
+val ElectricBlue = Color(0xFF1E6FD9)
+```
+
+**Button component by action:**
+```kotlin
+// BID button — RetroOrange, pill shape
+Button(
+    onClick = onBid,
+    colors = ButtonDefaults.buttonColors(containerColor = RetroOrange),
+    shape = RoundedCornerShape(50.dp)
+) {
+    Text("Place Bid", color = Color.White, fontWeight = FontWeight.Bold)
+}
+
+// BUY NOW button — ElectricBlue, pill shape
+Button(
+    onClick = onBuyNow,
+    colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue),
+    shape = RoundedCornerShape(50.dp)
+) {
+    Text("Buy Now", color = Color.White, fontWeight = FontWeight.Bold)
+}
+
+// RELIST — RaceRed outline, not filled (destructive feel without panic)
+OutlinedButton(
+    onClick = onRelist,
+    border = BorderStroke(1.5.dp, RaceRed),
+    shape = RoundedCornerShape(50.dp)
+) {
+    Text("Relist Item", color = RaceRed, fontWeight = FontWeight.SemiBold)
+}
+```
+
+---
+
+## 9. Performance Tech Vibe — Subtle Details
+
+These are small touches that add up to a "fast, engineered" feel. Apply carefully — do not overdo.
+
+**Monospace accents for numbers**
+Prices, timers, and bid counts use monospace font so digits don't jump width:
+```kotlin
+Text(
+    text = "$${listing.price}",
+    style = MaterialTheme.typography.headlineSmall.copy(
+        fontFamily = FontFamily.Monospace,
+        fontWeight = FontWeight.Bold,
+        color = RetroAmber
+    )
+)
+```
+
+**Countdown timer feels live**
+Use a ticking `LaunchedEffect` that updates every second — even if the value is static, the animation makes it feel real:
+```kotlin
+var timeLeft by remember { mutableStateOf(listing.timeRemaining) }
+LaunchedEffect(listing.id) {
+    while (true) {
+        delay(1000)
+        timeLeft = computeTimeLeft(listing.endsAt)
+    }
+}
+Text("⏱ $timeLeft", fontFamily = FontFamily.Monospace)
+```
+
+**Bid item screen: horizontal spec strip**
+Below the image on the bid detail screen, add a single horizontal strip of key specs (like a car spec sheet):
+```kotlin
+// A row of small labeled values — engine feel
+Row(modifier = Modifier.fillMaxWidth().background(RetroCard).padding(12.dp),
+    horizontalArrangement = Arrangement.SpaceEvenly) {
+    SpecItem(label = "START", value = "$${listing.startingPrice}")
+    Divider(modifier = Modifier.height(32.dp).width(1.dp), color = RetroBorder)
+    SpecItem(label = "BIDS", value = "${listing.bidCount}")
+    Divider(modifier = Modifier.height(32.dp).width(1.dp), color = RetroBorder)
+    SpecItem(label = "ENDS", value = timeLeft)
+}
+
+@Composable
+fun SpecItem(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(label, style = MaterialTheme.typography.labelSmall.copy(
+            letterSpacing = 1.5.sp, color = RetroMuted))
+        Text(value, style = MaterialTheme.typography.titleMedium.copy(
+            fontFamily = FontFamily.Monospace, color = RetroInk))
+    }
+}
+```
+
+**Snappy press feedback**
+Add `scale` animation on button press — feels mechanical, like a physical button:
+```kotlin
+var pressed by remember { mutableStateOf(false) }
+val scale by animateFloatAsState(if (pressed) 0.96f else 1f, label = "press")
+
+Button(
+    onClick = onBid,
+    modifier = Modifier
+        .scale(scale)
+        .pointerInput(Unit) {
+            detectTapGestures(
+                onPress = {
+                    pressed = true
+                    tryAwaitRelease()
+                    pressed = false
+                }
+            )
+        }
+)
+```

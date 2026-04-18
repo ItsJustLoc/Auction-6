@@ -60,9 +60,10 @@ fun RegisterScreen(
 
         Text(
             text = "Where the garage meets the marketplace",
-            style = MaterialTheme.typography.bodyMedium.copy(
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontSize = 17.sp,
                 fontStyle = FontStyle.Italic,
-                letterSpacing = 1.sp
+                letterSpacing = 0.5.sp
             ),
             color = RetroMuted,
             textAlign = TextAlign.Center,
