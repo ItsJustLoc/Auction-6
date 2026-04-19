@@ -31,10 +31,11 @@ fun MarketplaceRoute(
     var selectedCategory by remember { mutableStateOf("All") }
 
     LaunchedEffect(refreshTrigger, selectedCategory) {
+        val now = System.currentTimeMillis()
         listings = if (selectedCategory == "All") {
-            listingDao.getAllListings()
+            listingDao.getActiveListings(now)
         } else {
-            listingDao.getListingsByCategory(selectedCategory)
+            listingDao.getActiveListingsByCategory(selectedCategory, now)
         }
     }
 
